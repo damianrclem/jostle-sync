@@ -1,0 +1,3 @@
+# We wanna keep the Credit Plus XML looking as original as possible
+*.xml
+*.hbs

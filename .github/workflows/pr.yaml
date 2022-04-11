@@ -1,0 +1,23 @@
+name: build and test for pull requests
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  build_and_test:
+    uses: revolutionmortgage/github-actions/.github/workflows/typescript-build-and-test.yml@v3.0.1
+    with:
+      run-integration-tests: true
+    secrets:
+      npm-token: ${{ secrets.PUBLISH_NPM_TOKEN }}
+
+
+  build_docker:
+    needs: "build_and_test"
+    runs-on: ubuntu-latest
+    env:
+      NPM_TOKEN: ${{ secrets.PUBLISH_NPM_TOKEN }}
+    steps:
+      - uses: actions/checkout@v2
+      - run: docker build --build-arg NPM_TOKEN=${NPM_TOKEN} . -t rm/creditplus
