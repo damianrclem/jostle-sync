@@ -6,10 +6,11 @@ const { getJostleUsers } = proxyActivities<typeof activities>({
   startToCloseTimeout: '1 minute',
   retry: {
     initialInterval: '10s',
-    maximumAttempts: 3,
+    maximumAttempts: 1,
   }
 })
 
 export async function syncJostleUsersWorkflow(): Promise<void> {
-  await getJostleUsers()
+  const jostleUsers = await getJostleUsers()
+  console.log(jostleUsers);
 }
