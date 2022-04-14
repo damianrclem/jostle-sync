@@ -20,4 +20,4 @@ jobs:
       NPM_TOKEN: ${{ secrets.PUBLISH_NPM_TOKEN }}
     steps:
       - uses: actions/checkout@v2
-      - run: docker build --build-arg NPM_TOKEN=${NPM_TOKEN} . -t rm/creditplus
+      - run: docker build --build-arg NPM_TOKEN=${NPM_TOKEN} . -t rm/jostle-ad-sync

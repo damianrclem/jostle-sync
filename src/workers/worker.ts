@@ -2,27 +2,9 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { Worker, Core } from '@temporalio/worker';
 import 'dotenv/config';
-import { createConnection } from 'typeorm';
 import * as activities from '../activities';
-import { createUdnOrderActivityFactory } from '../activities/createUdnOrderActivity';
 
 async function run() {
-  applyAxiosS3Logger();
-
-  // without having this here, using `createConnection` without any parameters does not work!
-  // eslint-disable-next-line no-unused-vars
-  const connection = await createConnection();
-
-  // create creditplus client
-  const creditPlusClient = createCreditPlusClient();
-
-  // create encompass client
-  const encompassClient = createEncompassClient();
-
-  // create s3 client
-  const s3Client = getClient();
-
-  const sendGridClient = createSendGridProxyClient();
 
   const address = process.env.TEMPORAL_ADDRESS ?? 'localhost:7233';
 
@@ -37,21 +19,10 @@ async function run() {
   const worker = await Worker.create({
     workflowsPath: require.resolve('../workflows'),
     // eslint-disable-next-line prefer-object-spread
-    activities: Object.assign(
-      {},
-      activities,
-      createUdnOrderActivityFactory(creditPlusClient),
-      createUdnOrderDbSaveActivityFactory(),
-      getEncompassLoanFactory(encompassClient),
-      getUdnOrderActivityFactory(creditPlusClient, s3Client),
-      uploadUdnOrderFactory(encompassClient, s3Client),
-      sendEmailFactory(sendGridClient),
-    ),
-    taskQueue: 'credit-plus',
+    activities: Object.assign({}, activities),
+    taskQueue: 'jostle-ad-sync',
   });
   await worker.run();
-
-  connection.close();
 }
 
 run().catch((err) => {

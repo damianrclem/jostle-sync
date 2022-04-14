@@ -13,36 +13,11 @@ jobs:
     secrets:
       npm-token: ${{ secrets.PUBLISH_NPM_TOKEN }}
 
-  # NOTE: this should be made into a reusable workflow and shared with other projects
   build_docker:
     needs: "build_and_test"
     runs-on: ubuntu-latest
+    env:
+      NPM_TOKEN: ${{ secrets.PUBLISH_NPM_TOKEN }}
     steps:
       - uses: actions/checkout@v2
-
-      # gain access to aws tools account
-      - uses: Fooji/create-aws-profile-action@v1
-        name: "Create aws credentials"
-        with:
-          profile: default
-          region: us-east-2
-          key: ${{ secrets.TOOLS_AWS_ACCESS_KEY_ID }}
-          secret: ${{ secrets.TOOLS_AWS_SECRET_ACCESS_KEY }}
-
-      # gain access to ecr
-      - name: docker login to ecr
-        run: |
-          aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 635823940907.dkr.ecr.us-east-2.amazonaws.com
-
-      - name: build and tag image
-        env:
-          NPM_TOKEN: ${{ secrets.PUBLISH_NPM_TOKEN }}
-        run: |
-          timestamp=$(date +%s)
-          sha=$(git rev-parse --short HEAD)
-          # replace bad chars that can't be in container tag
-          branch=$(echo "$GITHUB_REF_NAME" | sed 's/\//_/g')
-          tag="635823940907.dkr.ecr.us-east-2.amazonaws.com/rm/creditplus:$branch-$sha-$timestamp"
-          # build, tag, push
-          docker build --build-arg NPM_TOKEN=${NPM_TOKEN} . -t $tag
-          docker push $tag
+      - run: docker build --build-arg NPM_TOKEN=${NPM_TOKEN} . -t rm/jostle-ad-sync
