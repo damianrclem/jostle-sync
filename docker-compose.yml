@@ -5,7 +5,7 @@
 version: '3.5'
 services:
   postgresql:
-    container_name: temporal-postgresql
+    container_name: jostle-ad-sync-temporal-postgresql
     environment:
       POSTGRES_PASSWORD: temporal
       POSTGRES_USER: temporal
@@ -17,7 +17,7 @@ services:
     volumes:
       - ./db.sql:/docker-entrypoint-initdb.d/db.sql
   temporal:
-    container_name: temporal
+    container_name: jostle-ad-sync-temporal
     depends_on:
       - postgresql
     #  - elasticsearch
@@ -39,7 +39,7 @@ services:
     volumes:
       - ./dynamicconfig:/etc/temporal/config/dynamicconfig
   temporal-admin-tools:
-    container_name: temporal-admin-tools
+    container_name: jostle-ad-sync-temporal-admin-tools
     depends_on:
       - temporal
     environment:
@@ -50,7 +50,7 @@ services:
     stdin_open: true
     tty: true
   temporal-web:
-    container_name: temporal-web
+    container_name: jostle-ad-sync-temporal-web
     depends_on:
       - temporal
     environment:
@@ -61,14 +61,3 @@ services:
     # - temporal-network
     ports:
       - 8088:8088
-
-  minio:
-    container_name: minio
-    environment:
-      - MINIO_ROOT_USER=jostle
-      - MINIO_ROOT_PASSWORD=jostle
-    image: quay.io/minio/minio
-    command: server /data --console-address ":9001"
-    ports:
-      - 9000:9000
-      - 9001:9001
