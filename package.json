@@ -3,20 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "temporal:start": "docker-compose up -d",
-    "temporal:stop": "docker-compose down",
+    "jostle-ad-sync:start": "docker-compose up -d",
+    "jostle-ad-sync:stop": "docker-compose down",
     "build": "tsc --build",
-    "build.watch": "tsc --build --watch",
-    "start:worker": "nodemon src/workers/worker.ts",
+    "worker:start": "nodemon src/workers/worker.ts",
     "lint": "eslint .",
     "start:api": "nodemon src/api/index.ts",
-    "start:mock-api:encompass": "nodemon src/mock-api/encompass/index.ts",
-    "test": "jest",
-    "test:unit": "jest",
-    "test:int": "bash __tests__/integration/setup/run.sh --runInBand",
-    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
-    "migration:run": "yarn typeorm migration:run",
-    "tools:decrypt": "ts-node ./tools/decrypt"
+    "test:unit": "echo 'no unit tests'"
   },
   "nodemonConfig": {
     "execMap": {
