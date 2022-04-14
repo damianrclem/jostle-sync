@@ -111,3 +111,5 @@ dynamicconfig/
 
 # Use yarn!
 package-lock.json
+
+jostleUsers.csv

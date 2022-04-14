@@ -6,7 +6,7 @@ const { getJostleUsers } = proxyActivities<typeof activities>({
   startToCloseTimeout: '1 minute',
   retry: {
     initialInterval: '10s',
-    maximumAttempts: 3,
+    maximumAttempts: 1,
   }
 })
 

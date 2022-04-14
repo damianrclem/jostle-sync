@@ -1,1 +1,6 @@
-export const getJostleUsers = () => Promise.resolve(console.log('TODO'))
+import csv from 'csvtojson';
+
+export const getJostleUsers = async () => {
+  const users = await csv().fromFile('./jostleUsers.csv')
+  console.log(users)
+}
