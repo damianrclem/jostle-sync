@@ -9,7 +9,7 @@ jobs:
   build_and_test:
     uses: revolutionmortgage/github-actions/.github/workflows/typescript-build-and-test.yml@v3.0.1
     with:
-      run-integration-tests: true
+      run-integration-tests: false
     secrets:
       npm-token: ${{ secrets.PUBLISH_NPM_TOKEN }}
 
