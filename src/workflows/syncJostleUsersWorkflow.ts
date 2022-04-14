@@ -11,5 +11,6 @@ const { getJostleUsers } = proxyActivities<typeof activities>({
 })
 
 export async function syncJostleUsersWorkflow(): Promise<void> {
-  await getJostleUsers()
+  const jostleUsers = await getJostleUsers()
+  console.log(jostleUsers);
 }

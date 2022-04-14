@@ -1,6 +1,7 @@
 import csv from 'csvtojson';
+import { JostleUser } from '../types';
 
-export const getJostleUsers = async () => {
+export const getJostleUsers = async (): Promise<Array<JostleUser>> => {
   const users = await csv().fromFile('./jostleUsers.csv')
-  console.log(users)
+  return users as Array<JostleUser>
 }
