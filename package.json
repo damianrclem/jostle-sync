@@ -8,7 +8,7 @@
     "build": "tsc --build",
     "worker:start": "nodemon src/workers/worker.ts",
     "lint": "eslint .",
-    "start:api": "nodemon src/api/index.ts",
+    "api:start": "nodemon src/api/index.ts",
     "test:unit": "echo 'no unit tests'"
   },
   "nodemonConfig": {
@@ -23,7 +23,7 @@
   "dependencies": {
     "axios": "^0.24.0",
     "dotenv": "^10.0.0",
-    "express": "^4.17.2",
+    "express": "^4.17.3",
     "express-async-errors": "^3.1.1",
     "jsonpath": "^1.1.1",
     "pdfkit": "^0.13.0",
