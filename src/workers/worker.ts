@@ -3,7 +3,7 @@
 import { Worker, Core } from '@temporalio/worker';
 import 'dotenv/config';
 import * as activities from '../activities';
-import { syncActiveDirectoryUsersFactory } from '../activities/syncActiveDirectoryUsers';
+import { syncActiveDirectoryUserFactory } from '../activities/syncActiveDirectoryUser';
 import { createMicrosoftGraphApiClient } from '../clients/microsoft-graph';
 
 async function run() {
@@ -24,7 +24,7 @@ async function run() {
   const worker = await Worker.create({
     workflowsPath: require.resolve('../workflows'),
     // eslint-disable-next-line prefer-object-spread
-    activities: Object.assign({}, activities, syncActiveDirectoryUsersFactory(microsoftGraphApiClient)),
+    activities: Object.assign({}, activities, syncActiveDirectoryUserFactory(microsoftGraphApiClient)),
     taskQueue: 'jostle-ad-sync',
   });
   await worker.run();

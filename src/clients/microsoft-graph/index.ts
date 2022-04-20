@@ -1,12 +1,9 @@
 import axios from "axios";
 import { EnvironmentConfigurationError } from "../../errors";
-
-interface User {
-  userPrincipalName: string;
-}
+import { ActiveDirectoryUser } from "../../types";
 
 interface GetUsersResponse {
-  value: Array<User>;
+  value: Array<ActiveDirectoryUser>;
   "odata.nextLink"?: string;
 }
 
@@ -53,7 +50,7 @@ export class MicrosoftGraphClient {
     return this.token;
   }
 
-  getUsers = async (): Promise<GetUsersResponse | undefined> => {
+  getUsers = async (): Promise<GetUsersResponse> => {
     const token = await this.authenticate();
     const response = await axios.get(`${this.baseUrl}/v1.0/users`, {
       headers: {
@@ -62,6 +59,15 @@ export class MicrosoftGraphClient {
     })
 
     return response.data as GetUsersResponse;
+  }
+
+  updateUser = async (idOrUserPrincipalName: string, userDetails: ActiveDirectoryUser): Promise<void> => {
+    const token = await this.authenticate();
+    await axios.patch(`${this.baseUrl}/v1.0/users/${idOrUserPrincipalName}`, userDetails, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
   }
 }
 

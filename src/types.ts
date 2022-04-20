@@ -55,3 +55,16 @@ export interface JostleUser {
   AccountState: string;
   UserType: string;
 }
+
+export interface ActiveDirectoryUser {
+  userPrincipalName: string;
+  mail: string;
+  displayName: string;
+  givenName: string;
+  surname: string;
+  streetAddress?: string;
+  city?: string;
+  state?: string;
+  postalCode?: string;
+  employeeId?: string;
+}
