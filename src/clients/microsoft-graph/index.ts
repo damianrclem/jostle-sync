@@ -1,13 +1,28 @@
-import axios from "axios";
-import { EnvironmentConfigurationError } from "../../errors";
+import axios from 'axios';
+import { EnvironmentConfigurationError } from '../../errors';
 
 interface User {
   userPrincipalName: string;
 }
 
+interface Fields {
+  Title: string;
+  ManagerLookupId: string;
+  EmailAddress: string;
+}
+
+interface Data {
+  fields: Fields;
+}
+
 interface GetUsersResponse {
   value: Array<User>;
-  "odata.nextLink"?: string;
+  'odata.nextLink'?: string;
+}
+
+interface GetSharepointManagerListResponse {
+  value: Array<Data>;
+  'odata.nextLink'?: string;
 }
 
 interface MicrosoftGraphClientArgs {
@@ -32,7 +47,7 @@ export class MicrosoftGraphClient {
     this.baseUrl = args.baseUrl;
     this.tenantId = args.tenantId;
     this.clientId = args.clientId;
-    this.clientSecret =  args.clientSecret
+    this.clientSecret = args.clientSecret;
   }
 
   private authenticate = async (): Promise<string> => {
@@ -40,52 +55,72 @@ export class MicrosoftGraphClient {
       return this.token;
     }
 
-    console.log("GETTING NEW AUTH TOKEN FOR MICROSOFT GRAPH API...")
+    console.log('GETTING NEW AUTH TOKEN FOR MICROSOFT GRAPH API...');
     const params = new URLSearchParams();
-    params.append("client_secret", this.clientSecret);
-    params.append("client_id", this.clientId);
-    params.append("grant_type", "client_credentials")
-    params.append("scope", encodeURI("https://graph.microsoft.com/.default"))
-    const response = await axios.post(`https://login.microsoftonline.com/${this.tenantId}/oauth2/v2.0/token`, params.toString());
+    params.append('client_secret', this.clientSecret);
+    params.append('client_id', this.clientId);
+    params.append('grant_type', 'client_credentials');
+    params.append('scope', encodeURI('https://graph.microsoft.com/.default'));
+    const response = await axios.post(
+      `https://login.microsoftonline.com/${this.tenantId}/oauth2/v2.0/token`,
+      params.toString(),
+    );
 
     const { data } = response;
     this.token = data.access_token;
     return this.token;
-  }
+  };
 
   getUsers = async (): Promise<GetUsersResponse | undefined> => {
     const token = await this.authenticate();
     const response = await axios.get(`${this.baseUrl}/v1.0/users`, {
       headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     return response.data as GetUsersResponse;
-  }
+  };
+
+  getSharepointManagerList = async (): Promise<GetSharepointManagerListResponse | undefined> => {
+    const siteId = '685d25d9-71c2-4367-859d-029f562f17f6';
+    const listId = 'c0f49be9-2559-4d45-ab2a-6b1bd46907c5'; // What list do we want to work with?
+
+    const token = await this.authenticate();
+    const response = await axios.get(
+      `${this.baseUrl}/v1.0/sites/${siteId}/lists/${listId}/items/?$expand=fields($select=id,Title,ManagerLookupId)`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    return response.data as GetSharepointManagerListResponse;
+  };
 }
 
 export const createMicrosoftGraphApiClient = (): MicrosoftGraphClient => {
   if (!process.env.MS_GRAPH_API_BASE_URL) {
-    throw new EnvironmentConfigurationError('Missing MS_GRAPH_API_BASE_URL env variable')
+    throw new EnvironmentConfigurationError('Missing MS_GRAPH_API_BASE_URL env variable');
   }
 
   if (!process.env.MS_GRAPH_API_TENANT_ID) {
-    throw new EnvironmentConfigurationError('Missing MS_GRAPH_API_TENANT_ID env variable')
+    throw new EnvironmentConfigurationError('Missing MS_GRAPH_API_TENANT_ID env variable');
   }
 
   if (!process.env.MS_GRAPH_API_CLIENT_ID) {
-    throw new EnvironmentConfigurationError('Missing MS_GRAPH_API_CLIENT_ID env variable')
+    throw new EnvironmentConfigurationError('Missing MS_GRAPH_API_CLIENT_ID env variable');
   }
 
   if (!process.env.MS_GRAPH_API_CLIENT_SECRET) {
-    throw new EnvironmentConfigurationError('Missing MS_GRAPH_API_CLIENT_SECRET env variable')
+    throw new EnvironmentConfigurationError('Missing MS_GRAPH_API_CLIENT_SECRET env variable');
   }
 
   return new MicrosoftGraphClient({
     baseUrl: process.env.MS_GRAPH_API_BASE_URL,
     tenantId: process.env.MS_GRAPH_API_TENANT_ID,
     clientId: process.env.MS_GRAPH_API_CLIENT_ID,
-    clientSecret: process.env.MS_GRAPH_API_CLIENT_SECRET
-  })
-}
+    clientSecret: process.env.MS_GRAPH_API_CLIENT_SECRET,
+  });
+};
