@@ -93,14 +93,14 @@ export async function syncJostleUsersWorkflow(): Promise<void> {
     // Finally, update users manager in AD
     await updateUsersManager(managerUserList[i].userId, manager.id);
 
-    const updateUserResults: UpdateUserManagerResults = {
+    const updatedUserManagerResults: UpdateUserManagerResults = {
       updateUsersManager: managerUserList[i].displayName,
       UserID: managerUserList[i].userId,
       UsersManager: manager.displayName,
       UsersManagerId: manager.id,
     };
 
-    console.log(updateUserResults);
+    console.log(updatedUserManagerResults);
   }
 
   const activeDirectorySyncResults = await Promise.allSettled(jostleUsers.map((user) => syncActiveDirectoryUser(user)));
