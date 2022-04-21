@@ -1,8 +1,17 @@
 /* eslint-disable camelcase */
 import axios from 'axios';
 import { EnvironmentConfigurationError } from '../../errors';
-import { ActiveDirectoryUser, ManagerListFields, ManagerLookupFields, GetManagerResponse } from '../../types';
-import { LIST_ID, SITE_ID, USER_INFO_LIST_ID } from '../../constants';
+import { ActiveDirectoryUser, ManagerLookupFields, GetManagerResponse } from '../../types';
+
+//  !!! This fields will chang !!!
+// TODO: the field properties for the returned list will need updated
+export interface ManagerListFields {
+  fields: {
+    field_6: string;
+    field_16: string;
+    Assigned_x0020_ManagerLookupId?: string;
+  };
+}
 
 interface GetSharepointManagerListResponse {
   value: Array<ManagerListFields>;
@@ -24,6 +33,9 @@ interface MicrosoftGraphClientArgs {
   tenantId: string;
   clientId: string;
   clientSecret: string;
+  siteId: string;
+  listId: string;
+  userInfoListId: string;
 }
 
 export class MicrosoftGraphClient {
@@ -35,6 +47,12 @@ export class MicrosoftGraphClient {
 
   private readonly clientSecret: string;
 
+  private readonly siteId: string;
+
+  private readonly listId: string;
+
+  private readonly userInfoListId: string;
+
   private token: string;
 
   constructor(args: MicrosoftGraphClientArgs) {
@@ -42,6 +60,9 @@ export class MicrosoftGraphClient {
     this.tenantId = args.tenantId;
     this.clientId = args.clientId;
     this.clientSecret = args.clientSecret;
+    this.siteId = args.siteId;
+    this.listId = args.listId;
+    this.userInfoListId = args.userInfoListId;
   }
 
   private authenticate = async (): Promise<string> => {
@@ -80,7 +101,7 @@ export class MicrosoftGraphClient {
     const token = await this.authenticate();
 
     const response = await axios.get(
-      `${this.baseUrl}/v1.0/sites/${SITE_ID}/lists/${LIST_ID}/items/?expand=fields,columns&top=10000`,
+      `${this.baseUrl}/v1.0/sites/${this.siteId}/lists/${this.listId}/items/?expand=fields,columns&top=10000`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -95,7 +116,7 @@ export class MicrosoftGraphClient {
     const token = await this.authenticate();
 
     const response = await axios.get(
-      `${this.baseUrl}/v1.0/sites/${SITE_ID}/lists/${USER_INFO_LIST_ID}/items/${managerLookupId}`,
+      `${this.baseUrl}/v1.0/sites/${this.siteId}/lists/${this.userInfoListId}/items/${managerLookupId}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -161,10 +182,25 @@ export const createMicrosoftGraphApiClient = (): MicrosoftGraphClient => {
     throw new EnvironmentConfigurationError('Missing MS_GRAPH_API_CLIENT_SECRET env variable');
   }
 
+  if (!process.env.MS_GRAPH_API_LIST_ID) {
+    throw new EnvironmentConfigurationError('Missing MS_GRAPH_API_LIST_ID env variable');
+  }
+
+  if (!process.env.MS_GRAPH_API_SITE_ID) {
+    throw new EnvironmentConfigurationError('Missing MS_GRAPH_API_SITE_ID env variable');
+  }
+
+  if (!process.env.MS_GRAPH_API_USER_INFO_LIST_ID) {
+    throw new EnvironmentConfigurationError('Missing MS_GRAPH_API_USER_INFO_LIST_ID env variable');
+  }
+
   return new MicrosoftGraphClient({
     baseUrl: process.env.MS_GRAPH_API_BASE_URL,
     tenantId: process.env.MS_GRAPH_API_TENANT_ID,
     clientId: process.env.MS_GRAPH_API_CLIENT_ID,
     clientSecret: process.env.MS_GRAPH_API_CLIENT_SECRET,
+    listId: process.env.MS_GRAPH_API_LIST_ID,
+    siteId: process.env.MS_GRAPH_API_SITE_ID,
+    userInfoListId: process.env.MS_GRAPH_API_USER_INFO_LIST_ID,
   });
 };

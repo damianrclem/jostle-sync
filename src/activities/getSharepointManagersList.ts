@@ -16,6 +16,7 @@ export const getSharepointManagersListFactory = (microsoftGraphApiClient: Micros
     }
 
     // Build readable object to work with
+    // TODO: the field properties for the returned list will need updated
     for (let i = 0; i < response?.value.length; i += 1) {
       userManagerList.push({
         displayName: response.value[i].fields.field_6,

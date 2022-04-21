@@ -69,15 +69,6 @@ export interface ActiveDirectoryUser {
   department: string;
 }
 
-//  !!! This fields will likely change... maybe we shouldn't strictly type these field properties? !!!
-export interface ManagerListFields {
-  fields: {
-    field_6: string;
-    field_16: string;
-    Assigned_x0020_ManagerLookupId?: string;
-  };
-}
-
 export interface ManagerLookupFields {
   ImnName: string;
   UserName: string;
