@@ -63,11 +63,10 @@ export interface ActiveDirectoryUser {
   displayName: string;
   givenName: string;
   surname: string;
-  streetAddress?: string;
-  city?: string;
-  state?: string;
-  postalCode?: string;
   employeeId?: string;
+  officeLocation: string;
+  jobTitle: string;
+  department: string;
 }
 
 export interface ManagerListFields {

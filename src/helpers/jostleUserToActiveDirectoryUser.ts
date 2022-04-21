@@ -12,11 +12,10 @@ export const mapJostleUserToActiveDirectoryUser = (jostleUser: JostleUser): Acti
     displayName: `${jostleUser.FirstName} ${jostleUser.LastName}`,
     givenName: jostleUser.FirstName,
     surname: jostleUser.LastName,
-    streetAddress: jostleUser.MailingAddress1Street || undefined,
-    city: jostleUser.MailingAddress1City || undefined,
-    state: jostleUser.MailingAddress1State || undefined,
-    postalCode: jostleUser.MailingAddress1Zip || undefined,
-    employeeId: jostleUser.EmployeeId || undefined
+    employeeId: jostleUser.EmployeeId || undefined,
+    officeLocation: jostleUser.OfficialLocation,
+    jobTitle: jostleUser.PrimaryRoleName,
+    department: jostleUser.JobCategory,
   };
 
   return activeDirectoryUser;
