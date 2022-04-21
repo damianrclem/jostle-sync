@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import axios from 'axios';
 import { EnvironmentConfigurationError } from '../../errors';
-import { ActiveDirectoryUser, ManagerListFields, GetManagerLookupResponse, GetManagerResponse } from '../../types';
+import { ActiveDirectoryUser, ManagerListFields, ManagerLookupFields, GetManagerResponse } from '../../types';
 import { LIST_ID, SITE_ID, USER_INFO_LIST_ID } from '../../constants';
 
 interface GetSharepointManagerListResponse {
@@ -11,6 +11,11 @@ interface GetSharepointManagerListResponse {
 
 interface GetUsersResponse {
   value: Array<ActiveDirectoryUser>;
+  'odata.nextLink'?: string;
+}
+
+interface GetManagerLookupResponse {
+  fields: ManagerLookupFields;
   'odata.nextLink'?: string;
 }
 
@@ -111,6 +116,22 @@ export class MicrosoftGraphClient {
     });
 
     return response.data as GetManagerResponse;
+  };
+
+  updateUsersManager = async (userId: string, managerId: string): Promise<void> => {
+    const token = await this.authenticate();
+
+    await axios.put(
+      `${this.baseUrl}/v1.0/users/${userId}/manager/$ref`,
+      {
+        '@odata.id': `https://graph.microsoft.com/v1.0/users/${managerId}`,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
   };
 
   updateUser = async (idOrUserPrincipalName: string, userDetails: ActiveDirectoryUser): Promise<void> => {

@@ -7,8 +7,8 @@ export const getManagerByLookupIdFactory = (microsoftGraphApiClient: MicrosoftGr
     if (!response) throw new Error(`response did not return any values`);
 
     return {
-      userPrincipalName: response.UserName,
-      managerName: response.ImnName,
+      userPrincipalName: response.fields.UserName,
+      managerName: response.fields.ImnName,
     };
   },
 });

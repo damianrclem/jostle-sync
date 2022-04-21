@@ -77,9 +77,9 @@ export interface ManagerListFields {
   };
 }
 
-export interface GetManagerLookupResponse {
-  UserName: string;
+export interface ManagerLookupFields {
   ImnName: string;
+  UserName: string;
 }
 
 export interface GetManagerResponse {

@@ -12,7 +12,7 @@ export const getSharepointManagersListFactory = (microsoftGraphApiClient: Micros
       userManagerList.push({
         displayName: response.value[i].fields.field_6,
         userId: response.value[i].fields.field_16,
-        managerLookupId: response.value[i].fields.Assigned_x0020_ManagerLookupId,
+        managerLookupId: response.value[i].fields.Assigned_x0020_ManagerLookupId!,
       });
     }
 

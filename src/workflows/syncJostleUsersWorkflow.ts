@@ -4,6 +4,8 @@ import * as activities from '../activities';
 import { syncActiveDirectoryUserFactory } from '../activities/syncActiveDirectoryUser';
 import { getSharepointManagersListFactory } from '../activities/getSharepointManagersList';
 import { getManagerByLookupIdFactory } from '../activities/getManagerByLookupId';
+import { getManagerIdFactory } from '../activities/getManagerId';
+import { updateUsersManagerFactory } from '../activities/updateUsersManager';
 
 const { getJostleUsers } = proxyActivities<typeof activities>({
   startToCloseTimeout: '1 minute',
@@ -33,6 +35,22 @@ const { getManagerByLookupId } = proxyActivities<ReturnType<typeof getManagerByL
   },
 });
 
+const { getManageId } = proxyActivities<ReturnType<typeof getManagerIdFactory>>({
+  startToCloseTimeout: '10 minutes',
+  retry: {
+    initialInterval: '10s',
+    maximumAttempts: 3,
+  },
+});
+
+const { updateUsersManager } = proxyActivities<ReturnType<typeof updateUsersManagerFactory>>({
+  startToCloseTimeout: '10 minutes',
+  retry: {
+    initialInterval: '10s',
+    maximumAttempts: 3,
+  },
+});
+
 interface SyncJostleUsersResult {
   jostleUsersToSync: number;
   activeDirectoryResults: {
@@ -46,8 +64,6 @@ export async function syncJostleUsersWorkflow(): Promise<void> {
 
   const managerUserList = await getSharepointManagersList();
 
-  // TODO: I will likely move the below into it's own Activity
-
   // Loop thru manager / user list
   for (let i = 0; managerUserList.length > i; i += 1) {
     if (!managerUserList[i].managerLookupId) {
@@ -55,18 +71,22 @@ export async function syncJostleUsersWorkflow(): Promise<void> {
     }
 
     // Look up manager by their lookup ID for given user
-    const managerLookup = await getManagerByLookupId('15');
-    // const managerLookup = await getManagerByLookupId(managerUserList[i].managerLookupId);
+    const managerLookup = await getManagerByLookupId(managerUserList[i].managerLookupId);
 
-    // TODO: Lookup manager by principalName to get managers id
+    // Lookup manager by principalName to get managers id
+    const manager = await getManageId(managerLookup.userPrincipalName);
 
-    // TODO: Finally, update users manager in Delve
+    // Finally, update users manager in Delve
+    await updateUsersManager(managerUserList[i].userId, manager.id);
 
-    console.log('matched manager: ', managerLookup);
+    const updateResults = {
+      updateUsersManager: managerUserList[i].displayName,
+      UserID: managerUserList[i].userId,
+      UsersManager: manager.displayName,
+      UsersManagerId: manager.id,
+    };
 
-    console.log(managerUserList[i].displayName);
-    console.log(managerUserList[i].managerLookupId);
-    console.log(managerUserList[i].userId);
+    console.log(updateResults);
   }
 
   const activeDirectorySyncResults = await Promise.allSettled(jostleUsers.map((user) => syncActiveDirectoryUser(user)));
