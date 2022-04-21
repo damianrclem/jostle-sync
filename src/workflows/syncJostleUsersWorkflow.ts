@@ -70,6 +70,7 @@ export async function syncJostleUsersWorkflow(): Promise<void> {
   const jostleUsers = await getJostleUsers();
 
   const managerUserList = await getSharepointManagersList();
+  if (!managerUserList) throw new Error('Manager list is empty!');
 
   // Loop thru user's manager list
   for (let i = 0; managerUserList.length > i; i += 1) {

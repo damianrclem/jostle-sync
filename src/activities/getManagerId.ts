@@ -1,14 +1,21 @@
 import { MicrosoftGraphClient } from '../clients/microsoft-graph';
 
+interface GetManagerResponse {
+  displayName: string;
+  id: string;
+}
+
 export const getManagerIdFactory = (microsoftGraphApiClient: MicrosoftGraphClient) => ({
-  getManageId: async (principalName: string) => {
+  getManageId: async (principalName: string): Promise<GetManagerResponse | undefined> => {
     const response = await microsoftGraphApiClient.getManagerId(principalName);
 
-    if (!response) throw new Error(`response did not return any values`);
+    if (!response) {
+      return undefined;
+    }
 
     return {
       displayName: response.displayName,
       id: response.id,
-    };
+    } as GetManagerResponse;
   },
 });

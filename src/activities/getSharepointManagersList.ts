@@ -1,11 +1,19 @@
 import { MicrosoftGraphClient } from '../clients/microsoft-graph';
 
+interface UsersManagerListResponse {
+  displayName: string;
+  userId: string;
+  managerLookupId: string;
+}
+
 export const getSharepointManagersListFactory = (microsoftGraphApiClient: MicrosoftGraphClient) => ({
-  getSharepointManagersList: async () => {
+  getSharepointManagersList: async (): Promise<Array<UsersManagerListResponse> | undefined> => {
     const response = await microsoftGraphApiClient.getSharepointManagerList();
     const userManagerList = [];
 
-    if (!response?.value) throw new Error(`response did not return any values`);
+    if (!response) {
+      return undefined;
+    }
 
     // Build readable object to work with
     for (let i = 0; i < response?.value.length; i += 1) {
@@ -16,6 +24,6 @@ export const getSharepointManagersListFactory = (microsoftGraphApiClient: Micros
       });
     }
 
-    return userManagerList;
+    return userManagerList as Array<UsersManagerListResponse>;
   },
 });
