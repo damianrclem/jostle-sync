@@ -59,6 +59,13 @@ interface SyncJostleUsersResult {
   };
 }
 
+interface UpdateUserRestuls {
+  updateUsersManager: string;
+  UserID: string;
+  UsersManager: string;
+  UsersManagerId: string;
+}
+
 export async function syncJostleUsersWorkflow(): Promise<void> {
   const jostleUsers = await getJostleUsers();
 
@@ -85,7 +92,7 @@ export async function syncJostleUsersWorkflow(): Promise<void> {
     // Finally, update users manager in AD
     await updateUsersManager(managerUserList[i].userId, manager.id);
 
-    const updateUserResults = {
+    const updateUserResults: UpdateUserRestuls = {
       updateUsersManager: managerUserList[i].displayName,
       UserID: managerUserList[i].userId,
       UsersManager: manager.displayName,
