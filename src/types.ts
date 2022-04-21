@@ -78,3 +78,9 @@ export interface GetManagerResponse {
   displayName: string;
   id: string;
 }
+
+export interface UsersManagerListResponse {
+  displayName: string;
+  userId: string;
+  managerLookupId: string;
+}
