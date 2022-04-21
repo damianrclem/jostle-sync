@@ -64,7 +64,7 @@ export async function syncJostleUsersWorkflow(): Promise<void> {
 
   const managerUserList = await getSharepointManagersList();
 
-  // Loop thru manager / user list
+  // Loop thru user's manager list
   for (let i = 0; managerUserList.length > i; i += 1) {
     if (!managerUserList[i].managerLookupId) {
       continue;
@@ -72,21 +72,27 @@ export async function syncJostleUsersWorkflow(): Promise<void> {
 
     // Look up manager by their lookup ID for given user
     const managerLookup = await getManagerByLookupId(managerUserList[i].managerLookupId);
+    if (!managerLookup) {
+      continue;
+    }
 
-    // Lookup manager by principalName to get managers id
+    // Lookup manager by their principalName to get managers id
     const manager = await getManageId(managerLookup.userPrincipalName);
+    if (!manager) {
+      continue;
+    }
 
-    // Finally, update users manager in Delve
+    // Finally, update users manager in AD
     await updateUsersManager(managerUserList[i].userId, manager.id);
 
-    const updateResults = {
+    const updateUserResults = {
       updateUsersManager: managerUserList[i].displayName,
       UserID: managerUserList[i].userId,
       UsersManager: manager.displayName,
       UsersManagerId: manager.id,
     };
 
-    console.log(updateResults);
+    console.log(updateUserResults);
   }
 
   const activeDirectorySyncResults = await Promise.allSettled(jostleUsers.map((user) => syncActiveDirectoryUser(user)));
