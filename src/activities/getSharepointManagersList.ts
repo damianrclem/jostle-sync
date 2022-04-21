@@ -11,7 +11,7 @@ export const getSharepointManagersListFactory = (microsoftGraphApiClient: Micros
     const response = await microsoftGraphApiClient.getSharepointManagerList();
     const userManagerList = [];
 
-    if (!response) {
+    if (!response?.value) {
       return undefined;
     }
 
