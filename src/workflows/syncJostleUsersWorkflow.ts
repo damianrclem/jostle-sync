@@ -61,7 +61,7 @@ interface SyncJostleUsersResult {
 
 interface UpdateUserManagerResults {
   updateUsersManager: string;
-  UserID: string;
+  UserId: string;
   UsersManager: string;
   UsersManagerId: string;
 }
@@ -95,7 +95,7 @@ export async function syncJostleUsersWorkflow(): Promise<void> {
 
     const updatedUserManagerResults: UpdateUserManagerResults = {
       updateUsersManager: managerUserList[i].displayName,
-      UserID: managerUserList[i].userId,
+      UserId: managerUserList[i].userId,
       UsersManager: manager.displayName,
       UsersManagerId: manager.id,
     };
