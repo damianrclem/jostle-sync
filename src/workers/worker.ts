@@ -4,10 +4,13 @@ import { Worker, Core } from '@temporalio/worker';
 import 'dotenv/config';
 import * as activities from '../activities';
 import { syncActiveDirectoryUserFactory } from '../activities/syncActiveDirectoryUser';
+import { getSharepointManagersListFactory } from '../activities/getSharepointManagersList';
+import { getManagerByLookupIdFactory } from '../activities/getManagerByLookupId';
+import { getManagerIdFactory } from '../activities/getManagerId';
+
 import { createMicrosoftGraphApiClient } from '../clients/microsoft-graph';
 
 async function run() {
-
   const address = process.env.TEMPORAL_ADDRESS ?? 'localhost:7233';
 
   await Core.install({
@@ -24,7 +27,14 @@ async function run() {
   const worker = await Worker.create({
     workflowsPath: require.resolve('../workflows'),
     // eslint-disable-next-line prefer-object-spread
-    activities: Object.assign({}, activities, syncActiveDirectoryUserFactory(microsoftGraphApiClient)),
+    activities: Object.assign(
+      {},
+      activities,
+      syncActiveDirectoryUserFactory(microsoftGraphApiClient),
+      getSharepointManagersListFactory(microsoftGraphApiClient),
+      getManagerByLookupIdFactory(microsoftGraphApiClient),
+      getManagerIdFactory(microsoftGraphApiClient),
+    ),
     taskQueue: 'jostle-ad-sync',
   });
   await worker.run();

@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 export interface JostleUser {
   Username: string;
   WorkEmail: string;
@@ -67,4 +68,22 @@ export interface ActiveDirectoryUser {
   state?: string;
   postalCode?: string;
   employeeId?: string;
+}
+
+export interface ManagerListFields {
+  fields: {
+    field_6: string;
+    field_16: string;
+    Assigned_x0020_ManagerLookupId?: string;
+  };
+}
+
+export interface GetManagerLookupResponse {
+  UserName: string;
+  ImnName: string;
+}
+
+export interface GetManagerResponse {
+  displayName: string;
+  id: string;
 }

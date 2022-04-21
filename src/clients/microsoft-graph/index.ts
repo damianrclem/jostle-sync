@@ -1,19 +1,12 @@
+/* eslint-disable camelcase */
 import axios from 'axios';
 import { EnvironmentConfigurationError } from '../../errors';
-import { ActiveDirectoryUser } from '../../types';
-
-interface Fields {
-  Title: string;
-  ManagerLookupId: string;
-  EmailAddress: string;
-}
-
-interface Data {
-  fields: Fields;
-}
+import { ActiveDirectoryUser, ManagerListFields, GetManagerLookupResponse, GetManagerResponse } from '../../types';
+import { LIST_ID, SITE_ID, USER_INFO_LIST_ID } from '../../constants';
 
 interface GetSharepointManagerListResponse {
-  value: Array<Data>;
+  value: Array<ManagerListFields>;
+  'odata.nextLink'?: string;
 }
 
 interface GetUsersResponse {
@@ -79,12 +72,10 @@ export class MicrosoftGraphClient {
   };
 
   getSharepointManagerList = async (): Promise<GetSharepointManagerListResponse | undefined> => {
-    const siteId = '685d25d9-71c2-4367-859d-029f562f17f6';
-    const listId = 'c0f49be9-2559-4d45-ab2a-6b1bd46907c5'; // What list do we want to work with?
-
     const token = await this.authenticate();
+
     const response = await axios.get(
-      `${this.baseUrl}/v1.0/sites/${siteId}/lists/${listId}/items/?$expand=fields($select=id,Title,ManagerLookupId)`,
+      `${this.baseUrl}/v1.0/sites/${SITE_ID}/lists/${LIST_ID}/items/?expand=fields,columns&top=10000`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -93,6 +84,33 @@ export class MicrosoftGraphClient {
     );
 
     return response.data as GetSharepointManagerListResponse;
+  };
+
+  getManagerByLookupId = async (managerLookupId: string): Promise<GetManagerLookupResponse | undefined> => {
+    const token = await this.authenticate();
+
+    const response = await axios.get(
+      `${this.baseUrl}/v1.0/sites/${SITE_ID}/lists/${USER_INFO_LIST_ID}/items/${managerLookupId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    return response.data as GetManagerLookupResponse;
+  };
+
+  getManagerId = async (principalName: string): Promise<GetManagerResponse | undefined> => {
+    const token = await this.authenticate();
+
+    const response = await axios.get(`${this.baseUrl}/v1.0/users/${principalName}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data as GetManagerResponse;
   };
 
   updateUser = async (idOrUserPrincipalName: string, userDetails: ActiveDirectoryUser): Promise<void> => {
