@@ -46,6 +46,8 @@ export async function syncJostleUsersWorkflow(): Promise<void> {
 
   const managerUserList = await getSharepointManagersList();
 
+  // I will likely move the below into it's own Activity
+
   // Loop thru manager / user list
   for (let i = 0; managerUserList.length > i; i += 1) {
     if (!managerUserList[i].managerLookupId) {
