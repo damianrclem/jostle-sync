@@ -46,13 +46,19 @@ export async function syncJostleUsersWorkflow(): Promise<void> {
 
   const managerUserList = await getSharepointManagersList();
 
+  // Loop thru manager / user list
   for (let i = 0; managerUserList.length > i; i += 1) {
     if (!managerUserList[i].managerLookupId) {
       continue;
     }
 
+    // Look up manager by their lookup ID for given user
     const managerLookup = await getManagerByLookupId('15');
     // const managerLookup = await getManagerByLookupId(managerUserList[i].managerLookupId);
+
+    // TODO: Lookup manager by principalName to get managers id
+
+    // TODO: Finally, update users manager in Delve
 
     console.log('matched manager: ', managerLookup);
 
