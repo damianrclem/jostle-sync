@@ -93,7 +93,7 @@ const updateUsersAdManager = async (
   }
 
   // Lookup manager by their principalName to get managers id
-  const manager = await getManageId(managerLookup.userPrincipalName);
+  const manager = await getManagerId(managerLookup.userPrincipalName);
   if (!manager) {
     return;
   }
