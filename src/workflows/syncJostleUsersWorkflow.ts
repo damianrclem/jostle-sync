@@ -61,49 +61,50 @@ interface SyncJostleUsersResult {
 }
 
 interface UpdateUserManagerResults {
-  usersNotSuccessfullyUpdated: string;
-  UserId: string;
-  UsersManager?: string;
-  UsersManagerId?: string;
+  usersNotUpdated: object;
+  usersUpdatedSuccessfully: object;
 }
 
-interface UserManagerNotFound {
-  updateUsersManager: string;
-}
-
-const returnResponse = [];
+const usersNotUpdated: object[] = [];
+const usersUpdatedSuccessfully: object[] = [];
 
 const updateUsersAdManager = async (
   managerUser: UsersManagerListResponse,
-): Promise<UpdateUserManagerResults | undefined> => {
+): Promise<UpdateUserManagerResults | boolean> => {
   if (!managerUser.managerLookupId) {
-    returnResponse.push({
-      usersNotSuccessfullyUpdated: '',
-      UserId: managerUser.userId,
-    });
-
-    console.log('no lookup id found');
-    return returnResponse;
+    return false;
   }
 
   // Look up manager by their lookup ID for given user
   const managerLookup = await getManagerByLookupId(managerUser.managerLookupId);
   if (!managerLookup) {
-    return;
+    usersNotUpdated.push({
+      user: managerUser.displayName,
+      userId: managerUser.userId,
+    });
+    return false;
   }
 
   // Lookup manager by their principalName to get managers id
   const manager = await getManagerId(managerLookup.userPrincipalName);
   if (!manager) {
-    return;
+    return false;
   }
 
   // Finally, update users manager in AD
   await updateUsersManager(managerUser.userId, manager.id);
 
-  console.log('do I make it here?');
+  usersUpdatedSuccessfully.push({
+    user: managerUser.displayName,
+    userId: managerUser.userId,
+    manager: manager.displayName,
+    managerId: manager.id,
+  });
 
-  // return returnResponse;
+  return {
+    usersNotUpdated,
+    usersUpdatedSuccessfully,
+  } as UpdateUserManagerResults;
 };
 
 export async function syncJostleUsersWorkflow(): Promise<void> {
@@ -112,7 +113,9 @@ export async function syncJostleUsersWorkflow(): Promise<void> {
   const managerUserList = await getSharepointManagersList();
   if (!managerUserList) throw new Error('Manager list is empty!');
 
-  await managerUserList.map((userManager) => updateUsersAdManager(userManager));
+  const userManagerUpdatedResults = await managerUserList.map((userManager) => updateUsersAdManager(userManager));
+
+  console.log(userManagerUpdatedResults);
 
   const activeDirectorySyncResults = await Promise.allSettled(jostleUsers.map((user) => syncActiveDirectoryUser(user)));
   const activeDirectoryUsersSuccessfullyUpdated = activeDirectorySyncResults.filter(
