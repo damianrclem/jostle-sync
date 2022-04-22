@@ -35,7 +35,7 @@ const { getManagerByLookupId } = proxyActivities<ReturnType<typeof getManagerByL
   },
 });
 
-const { getManageId } = proxyActivities<ReturnType<typeof getManagerIdFactory>>({
+const { getManagerId } = proxyActivities<ReturnType<typeof getManagerIdFactory>>({
   startToCloseTimeout: '10 minutes',
   retry: {
     initialInterval: '10s',
