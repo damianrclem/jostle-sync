@@ -1,6 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { proxyActivities } from '@temporalio/workflow';
 import * as activities from '../activities';
+import { UsersManagerListResponse } from '../types';
 import { syncActiveDirectoryUserFactory } from '../activities/syncActiveDirectoryUser';
 import { getSharepointManagersListFactory } from '../activities/getSharepointManagersList';
 import { getManagerByLookupIdFactory } from '../activities/getManagerByLookupId';
@@ -60,11 +61,50 @@ interface SyncJostleUsersResult {
 }
 
 interface UpdateUserManagerResults {
-  updateUsersManager: string;
+  usersNotSuccessfullyUpdated: string;
   UserId: string;
-  UsersManager: string;
-  UsersManagerId: string;
+  UsersManager?: string;
+  UsersManagerId?: string;
 }
+
+interface UserManagerNotFound {
+  updateUsersManager: string;
+}
+
+const returnResponse = [];
+
+const updateUsersAdManager = async (
+  managerUser: UsersManagerListResponse,
+): Promise<UpdateUserManagerResults | undefined> => {
+  if (!managerUser.managerLookupId) {
+    returnResponse.push({
+      usersNotSuccessfullyUpdated: '',
+      UserId: managerUser.userId,
+    });
+
+    console.log('no lookup id found');
+    return returnResponse;
+  }
+
+  // Look up manager by their lookup ID for given user
+  const managerLookup = await getManagerByLookupId(managerUser.managerLookupId);
+  if (!managerLookup) {
+    return;
+  }
+
+  // Lookup manager by their principalName to get managers id
+  const manager = await getManageId(managerLookup.userPrincipalName);
+  if (!manager) {
+    return;
+  }
+
+  // Finally, update users manager in AD
+  await updateUsersManager(managerUser.userId, manager.id);
+
+  console.log('do I make it here?');
+
+  // return returnResponse;
+};
 
 export async function syncJostleUsersWorkflow(): Promise<void> {
   const jostleUsers = await getJostleUsers();
@@ -72,36 +112,7 @@ export async function syncJostleUsersWorkflow(): Promise<void> {
   const managerUserList = await getSharepointManagersList();
   if (!managerUserList) throw new Error('Manager list is empty!');
 
-  // Loop thru user's manager list
-  for (let i = 0; managerUserList.length > i; i += 1) {
-    if (!managerUserList[i].managerLookupId) {
-      continue;
-    }
-
-    // Look up manager by their lookup ID for given user
-    const managerLookup = await getManagerByLookupId(managerUserList[i].managerLookupId);
-    if (!managerLookup) {
-      continue;
-    }
-
-    // Lookup manager by their principalName to get managers id
-    const manager = await getManageId(managerLookup.userPrincipalName);
-    if (!manager) {
-      continue;
-    }
-
-    // Finally, update users manager in AD
-    await updateUsersManager(managerUserList[i].userId, manager.id);
-
-    const updatedUserManagerResults: UpdateUserManagerResults = {
-      updateUsersManager: managerUserList[i].displayName,
-      UserId: managerUserList[i].userId,
-      UsersManager: manager.displayName,
-      UsersManagerId: manager.id,
-    };
-
-    console.log(updatedUserManagerResults);
-  }
+  await managerUserList.map((userManager) => updateUsersAdManager(userManager));
 
   const activeDirectorySyncResults = await Promise.allSettled(jostleUsers.map((user) => syncActiveDirectoryUser(user)));
   const activeDirectoryUsersSuccessfullyUpdated = activeDirectorySyncResults.filter(
