@@ -127,7 +127,7 @@ export class MicrosoftGraphClient {
     return response.data as GetManagerLookupResponse;
   };
 
-  getManagerId = async (principalName: string): Promise<GetManagerResponse | undefined> => {
+  getUser = async (principalName: string): Promise<GetManagerResponse | undefined> => {
     const token = await this.authenticate();
 
     const response = await axios.get(`${this.baseUrl}/v1.0/users/${principalName}`, {
