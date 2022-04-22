@@ -9,7 +9,7 @@ export const getManagerByLookupIdFactory = (microsoftGraphApiClient: MicrosoftGr
   getManagerByLookupId: async (managerLookupId: string): Promise<GetManagerLookupResponse | undefined> => {
     const response = await microsoftGraphApiClient.getManagerByLookupId(managerLookupId);
 
-    if (!response) {
+    if (!response?.fields) {
       return undefined;
     }
 
