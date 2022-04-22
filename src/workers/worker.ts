@@ -27,16 +27,14 @@ async function run() {
   // NOTE: how does this connect to temporal? https://github.com/temporalio/sdk-typescript/blob/a7e87946a2644765b12f377d4b53c0bff312992e/packages/test/src/load/worker.ts#L43
   const worker = await Worker.create({
     workflowsPath: require.resolve('../workflows'),
-    // eslint-disable-next-line prefer-object-spread
-    activities: Object.assign(
-      {},
-      activities,
-      syncActiveDirectoryUserFactory(microsoftGraphApiClient),
-      getSharepointManagersListFactory(microsoftGraphApiClient),
-      getManagerByLookupIdFactory(microsoftGraphApiClient),
-      getManagerIdFactory(microsoftGraphApiClient),
-      updateUsersManagerFactory(microsoftGraphApiClient),
-    ),
+    activities: {
+      ...activities,
+      ...syncActiveDirectoryUserFactory(microsoftGraphApiClient),
+      ...getSharepointManagersListFactory(microsoftGraphApiClient),
+      ...getManagerByLookupIdFactory(microsoftGraphApiClient),
+      ...getManagerIdFactory(microsoftGraphApiClient),
+      ...updateUsersManagerFactory(microsoftGraphApiClient),
+    },
     taskQueue: 'jostle-ad-sync',
   });
   await worker.run();
