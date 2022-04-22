@@ -6,7 +6,7 @@ interface GetManagerResponse {
 }
 
 export const getManagerIdFactory = (microsoftGraphApiClient: MicrosoftGraphClient) => ({
-  getManageId: async (principalName: string): Promise<GetManagerResponse | undefined> => {
+  getManagerId: async (principalName: string): Promise<GetManagerResponse | undefined> => {
     const response = await microsoftGraphApiClient.getUser(principalName);
 
     if (!response?.displayName || response.id) {
