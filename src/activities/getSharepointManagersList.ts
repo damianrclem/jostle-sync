@@ -1,10 +1,10 @@
 import { MicrosoftGraphClient } from '../clients/microsoft-graph';
 import { UsersManagerListResponse } from '../types';
+import { siteId, listId } from '../constants';
 
 export const getSharepointManagersListFactory = (microsoftGraphApiClient: MicrosoftGraphClient) => ({
   getSharepointManagersList: async (): Promise<Array<UsersManagerListResponse> | undefined> => {
-    const response = await microsoftGraphApiClient.getSharepointManagerList();
-    // const userManagerList = [];
+    const response = await microsoftGraphApiClient.getSharepointList(siteId, listId);
 
     if (!response?.value) {
       return undefined;

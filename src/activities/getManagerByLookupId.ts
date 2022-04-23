@@ -1,4 +1,5 @@
 import { MicrosoftGraphClient } from '../clients/microsoft-graph';
+import { siteId, userInfoListId } from '../constants';
 
 interface GetManagerLookupResponse {
   userPrincipalName: string;
@@ -7,7 +8,7 @@ interface GetManagerLookupResponse {
 
 export const getManagerByLookupIdFactory = (microsoftGraphApiClient: MicrosoftGraphClient) => ({
   getManagerByLookupId: async (managerLookupId: string): Promise<GetManagerLookupResponse | undefined> => {
-    const response = await microsoftGraphApiClient.getManagerByLookupId(managerLookupId);
+    const response = await microsoftGraphApiClient.getUserByLookupId(managerLookupId, siteId, userInfoListId);
 
     if (!response?.fields) {
       return undefined;

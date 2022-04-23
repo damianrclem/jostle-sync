@@ -33,9 +33,6 @@ interface MicrosoftGraphClientArgs {
   tenantId: string;
   clientId: string;
   clientSecret: string;
-  siteId: string;
-  listId: string;
-  userInfoListId: string;
 }
 
 export class MicrosoftGraphClient {
@@ -47,12 +44,6 @@ export class MicrosoftGraphClient {
 
   private readonly clientSecret: string;
 
-  private readonly siteId: string;
-
-  private readonly listId: string;
-
-  private readonly userInfoListId: string;
-
   private token: string;
 
   constructor(args: MicrosoftGraphClientArgs) {
@@ -60,9 +51,6 @@ export class MicrosoftGraphClient {
     this.tenantId = args.tenantId;
     this.clientId = args.clientId;
     this.clientSecret = args.clientSecret;
-    this.siteId = args.siteId;
-    this.listId = args.listId;
-    this.userInfoListId = args.userInfoListId;
   }
 
   private authenticate = async (): Promise<string> => {
@@ -97,11 +85,11 @@ export class MicrosoftGraphClient {
     return response.data as GetUsersResponse;
   };
 
-  getSharepointManagerList = async (): Promise<GetSharepointManagerListResponse | undefined> => {
+  getSharepointList = async (siteId: string, listId: string): Promise<GetSharepointManagerListResponse | undefined> => {
     const token = await this.authenticate();
 
     const response = await axios.get(
-      `${this.baseUrl}/v1.0/sites/${this.siteId}/lists/${this.listId}/items/?expand=fields,columns&top=10000`,
+      `${this.baseUrl}/v1.0/sites/${siteId}/lists/${listId}/items/?expand=fields,columns&top=10000`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -112,11 +100,15 @@ export class MicrosoftGraphClient {
     return response.data as GetSharepointManagerListResponse;
   };
 
-  getManagerByLookupId = async (managerLookupId: string): Promise<GetManagerLookupResponse | undefined> => {
+  getUserByLookupId = async (
+    userLookupId: string,
+    siteId: string,
+    userInfoListId: string,
+  ): Promise<GetManagerLookupResponse | undefined> => {
     const token = await this.authenticate();
 
     const response = await axios.get(
-      `${this.baseUrl}/v1.0/sites/${this.siteId}/lists/${this.userInfoListId}/items/${managerLookupId}`,
+      `${this.baseUrl}/v1.0/sites/${siteId}/lists/${userInfoListId}/items/${userLookupId}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -190,17 +182,10 @@ export const createMicrosoftGraphApiClient = (): MicrosoftGraphClient => {
     throw new EnvironmentConfigurationError('Missing MS_GRAPH_API_SITE_ID env variable');
   }
 
-  if (!process.env.MS_GRAPH_API_USER_INFO_LIST_ID) {
-    throw new EnvironmentConfigurationError('Missing MS_GRAPH_API_USER_INFO_LIST_ID env variable');
-  }
-
   return new MicrosoftGraphClient({
     baseUrl: process.env.MS_GRAPH_API_BASE_URL,
     tenantId: process.env.MS_GRAPH_API_TENANT_ID,
     clientId: process.env.MS_GRAPH_API_CLIENT_ID,
     clientSecret: process.env.MS_GRAPH_API_CLIENT_SECRET,
-    listId: process.env.MS_GRAPH_API_LIST_ID,
-    siteId: process.env.MS_GRAPH_API_SITE_ID,
-    userInfoListId: process.env.MS_GRAPH_API_USER_INFO_LIST_ID,
   });
 };
