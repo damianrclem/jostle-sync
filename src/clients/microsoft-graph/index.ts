@@ -3,7 +3,7 @@ import axios from 'axios';
 import { EnvironmentConfigurationError } from '../../errors';
 import { ActiveDirectoryUser, ManagerLookupFields, GetManagerResponse } from '../../types';
 
-//  !!! This fields will chang !!!
+//  !!! This fields will change !!!
 // TODO: the field properties for the returned list will need updated
 export interface ManagerListFields {
   fields: {
@@ -44,21 +44,32 @@ export class MicrosoftGraphClient {
 
   private readonly clientSecret: string;
 
-  private token: string;
+  private token;
 
   constructor(args: MicrosoftGraphClientArgs) {
     this.baseUrl = args.baseUrl;
     this.tenantId = args.tenantId;
     this.clientId = args.clientId;
     this.clientSecret = args.clientSecret;
+    // The token can get set once when the client is initialized in the worker
+    // Will prevent the token from having to get called every time an endpoint is called
+    this.token = this.setToken();
   }
+
+  // Set the token once when the worker starts
+  private setToken = async (): Promise<string> => {
+    const token = await this.authenticate();
+    console.log(
+      'NEW AUTH TOKEN FOR MICROSOFT GRAPH API WAS SET...  Send http://localhost:3000/sync in postman to start sync...',
+    );
+    return token;
+  };
 
   private authenticate = async (): Promise<string> => {
     if (this.token) {
       return this.token;
     }
 
-    console.log('GETTING NEW AUTH TOKEN FOR MICROSOFT GRAPH API...');
     const params = new URLSearchParams();
     params.append('client_secret', this.clientSecret);
     params.append('client_id', this.clientId);
@@ -86,13 +97,11 @@ export class MicrosoftGraphClient {
   };
 
   getSharepointList = async (siteId: string, listId: string): Promise<GetSharepointManagerListResponse | undefined> => {
-    const token = await this.authenticate();
-
     const response = await axios.get(
       `${this.baseUrl}/v1.0/sites/${siteId}/lists/${listId}/items/?expand=fields,columns&top=10000`,
       {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${this.token}`,
         },
       },
     );
@@ -105,13 +114,11 @@ export class MicrosoftGraphClient {
     siteId: string,
     userInfoListId: string,
   ): Promise<GetManagerLookupResponse | undefined> => {
-    const token = await this.authenticate();
-
     const response = await axios.get(
       `${this.baseUrl}/v1.0/sites/${siteId}/lists/${userInfoListId}/items/${userLookupId}`,
       {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${this.token}`,
         },
       },
     );
@@ -120,11 +127,11 @@ export class MicrosoftGraphClient {
   };
 
   getUser = async (principalName: string): Promise<GetManagerResponse | undefined> => {
-    const token = await this.authenticate();
+    // const token = await this.authenticate();
 
     const response = await axios.get(`${this.baseUrl}/v1.0/users/${principalName}`, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${this.token}`,
       },
     });
 
@@ -132,8 +139,6 @@ export class MicrosoftGraphClient {
   };
 
   updateUsersManager = async (userId: string, managerId: string): Promise<void> => {
-    const token = await this.authenticate();
-
     await axios.put(
       `${this.baseUrl}/v1.0/users/${userId}/manager/$ref`,
       {
@@ -141,17 +146,16 @@ export class MicrosoftGraphClient {
       },
       {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${this.token}`,
         },
       },
     );
   };
 
   updateUser = async (idOrUserPrincipalName: string, userDetails: ActiveDirectoryUser): Promise<void> => {
-    const token = await this.authenticate();
     await axios.patch(`${this.baseUrl}/v1.0/users/${idOrUserPrincipalName}`, userDetails, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${this.token}`,
       },
     });
   };
@@ -172,14 +176,6 @@ export const createMicrosoftGraphApiClient = (): MicrosoftGraphClient => {
 
   if (!process.env.MS_GRAPH_API_CLIENT_SECRET) {
     throw new EnvironmentConfigurationError('Missing MS_GRAPH_API_CLIENT_SECRET env variable');
-  }
-
-  if (!process.env.MS_GRAPH_API_LIST_ID) {
-    throw new EnvironmentConfigurationError('Missing MS_GRAPH_API_LIST_ID env variable');
-  }
-
-  if (!process.env.MS_GRAPH_API_SITE_ID) {
-    throw new EnvironmentConfigurationError('Missing MS_GRAPH_API_SITE_ID env variable');
   }
 
   return new MicrosoftGraphClient({
