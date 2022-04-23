@@ -58,65 +58,77 @@ interface SyncJostleUsersResult {
     usersSuccessfullyUpdated: number;
     usersFailedToUpdate: number;
   };
+  userManagersAssignedResults: {
+    totalUsers: number;
+    userManagersNotAssigned: {
+      assignedManagers: boolean;
+      total: number;
+      users: string;
+    };
+    userManagersAssigned: {
+      assignedManagers: boolean;
+      total: number;
+      users: string;
+    };
+  };
 }
 
 interface UpdateUserManagerResults {
-  usersNotUpdated: object;
-  usersUpdatedSuccessfully: object;
+  assignedManager: boolean;
+  updateUsersManagerFor: string;
+  userId: string;
+  usersManager?: string;
+  usersManagerId?: string;
 }
 
-const usersNotUpdated: object[] = [];
-const usersUpdatedSuccessfully: object[] = [];
+const noManagerAssigned: object[] = [];
+const managerAssigned: object[] = [];
 
-const updateUsersAdManager = async (
-  managerUser: UsersManagerListResponse,
-): Promise<UpdateUserManagerResults | boolean> => {
-  if (!managerUser.managerLookupId) {
-    return false;
+const updateAdUsersManager = async (managerUserList: Array<UsersManagerListResponse>) => {
+  // Loop thru user's manager list
+  for (let i = 0; managerUserList.length > i; i += 1) {
+    if (!managerUserList[i].managerLookupId) {
+      const updatedUserManagerResults: UpdateUserManagerResults = {
+        assignedManager: false,
+        updateUsersManagerFor: managerUserList[i].displayName,
+        userId: managerUserList[i].userId,
+      };
+
+      noManagerAssigned.push(updatedUserManagerResults);
+      continue;
+    }
+
+    // Look up manager by their lookup ID for given user
+    const managerLookup = await getManagerByLookupId(managerUserList[i].managerLookupId);
+    if (!managerLookup) {
+      continue;
+    }
+
+    // Lookup manager by their principalName to get managers id
+    const manager = await getManagerId(managerLookup.userPrincipalName);
+    if (!manager) {
+      continue;
+    }
+
+    // Finally, update users manager in AD
+    await updateUsersManager(managerUserList[i].userId, manager.id);
+
+    const updatedUserManagerResults: UpdateUserManagerResults = {
+      assignedManager: true,
+      updateUsersManagerFor: managerUserList[i].displayName,
+      userId: managerUserList[i].userId,
+      usersManager: manager.displayName,
+      usersManagerId: manager.id,
+    };
+
+    managerAssigned.push(updatedUserManagerResults);
   }
-
-  // Look up manager by their lookup ID for given user
-  const managerLookup = await getManagerByLookupId(managerUser.managerLookupId);
-  if (!managerLookup) {
-    usersNotUpdated.push({
-      user: managerUser.displayName,
-      userId: managerUser.userId,
-    });
-    return false;
-  }
-
-  // Lookup manager by their principalName to get managers id
-  const manager = await getManagerId(managerLookup.userPrincipalName);
-  if (!manager) {
-    return false;
-  }
-
-  // Finally, update users manager in AD
-  await updateUsersManager(managerUser.userId, manager.id);
-
-  usersUpdatedSuccessfully.push({
-    user: managerUser.displayName,
-    userId: managerUser.userId,
-    manager: manager.displayName,
-    managerId: manager.id,
-  });
-
-  return {
-    usersNotUpdated,
-    usersUpdatedSuccessfully,
-  } as UpdateUserManagerResults;
 };
 
 export async function syncJostleUsersWorkflow(): Promise<void> {
+  console.log('UPDATING USERS PROFILE');
+
   const jostleUsers = await getJostleUsers();
-
-  const managerUserList = await getSharepointManagersList();
-  if (!managerUserList) throw new Error('Manager list is empty!');
-
-  const userManagerUpdatedResults = await managerUserList.map((userManager) => updateUsersAdManager(userManager));
-
-  console.log(userManagerUpdatedResults);
-
   const activeDirectorySyncResults = await Promise.allSettled(jostleUsers.map((user) => syncActiveDirectoryUser(user)));
   const activeDirectoryUsersSuccessfullyUpdated = activeDirectorySyncResults.filter(
     (result) => result.status === 'fulfilled',
@@ -125,11 +137,31 @@ export async function syncJostleUsersWorkflow(): Promise<void> {
     (result) => result.status === 'rejected',
   ).length;
 
+  const managerUserList = await getSharepointManagersList();
+  if (!managerUserList) throw new Error('Manager list is empty!');
+
+  console.log('UPDATING USERS MANAGER');
+
+  await updateAdUsersManager(managerUserList);
+
   const result: SyncJostleUsersResult = {
     jostleUsersToSync: jostleUsers.length,
     activeDirectoryResults: {
       usersSuccessfullyUpdated: activeDirectoryUsersSuccessfullyUpdated,
       usersFailedToUpdate: activeDirectoryUsersFailedToUpdated,
+    },
+    userManagersAssignedResults: {
+      totalUsers: managerUserList.length,
+      userManagersNotAssigned: {
+        assignedManagers: false,
+        total: noManagerAssigned.length,
+        users: JSON.stringify(noManagerAssigned),
+      },
+      userManagersAssigned: {
+        assignedManagers: true,
+        total: managerAssigned.length,
+        users: JSON.stringify(managerAssigned),
+      },
     },
   };
 
