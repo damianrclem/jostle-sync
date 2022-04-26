@@ -44,7 +44,7 @@ export class MicrosoftGraphClient {
 
   private readonly clientSecret: string;
 
-  private token;
+  private token: string;
 
   constructor(args: MicrosoftGraphClientArgs) {
     this.baseUrl = args.baseUrl;
@@ -53,23 +53,10 @@ export class MicrosoftGraphClient {
     this.clientSecret = args.clientSecret;
     // The token can get set once when the client is initialized in the worker
     // Will prevent the token from having to get called every time an endpoint is called
-    this.token = this.setToken();
+    this.authenticate();
   }
 
-  // Set the token once when the worker starts
-  private setToken = async (): Promise<string> => {
-    const token = await this.authenticate();
-    console.log(
-      'NEW AUTH TOKEN FOR MICROSOFT GRAPH API WAS SET...  Send http://localhost:3000/sync in postman to start sync...',
-    );
-    return token;
-  };
-
-  private authenticate = async (): Promise<string> => {
-    if (this.token) {
-      return this.token;
-    }
-
+  private authenticate = async (): Promise<void> => {
     const params = new URLSearchParams();
     params.append('client_secret', this.clientSecret);
     params.append('client_id', this.clientId);
@@ -80,9 +67,12 @@ export class MicrosoftGraphClient {
       params.toString(),
     );
 
+    console.log(
+      'NEW AUTH TOKEN FOR MICROSOFT GRAPH API WAS SET...  Send http://localhost:3000/sync in postman to start sync...',
+    );
+
     const { data } = response;
     this.token = data.access_token;
-    return this.token;
   };
 
   getUsers = async (): Promise<GetUsersResponse> => {
@@ -127,8 +117,6 @@ export class MicrosoftGraphClient {
   };
 
   getUser = async (principalName: string): Promise<GetManagerResponse | undefined> => {
-    // const token = await this.authenticate();
-
     const response = await axios.get(`${this.baseUrl}/v1.0/users/${principalName}`, {
       headers: {
         Authorization: `Bearer ${this.token}`,
