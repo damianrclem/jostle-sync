@@ -64,15 +64,14 @@ export class MicrosoftGraphClient {
       params.toString(),
     );
 
-    console.log(
-      'NEW AUTH TOKEN FOR MICROSOFT GRAPH API WAS SET...  Send http://localhost:3000/sync in postman to start sync...',
-    );
-
     const { data } = response;
     return data.access_token;
   };
 
   setToken = async () => {
+    console.log(
+      'NEW AUTH TOKEN FOR MICROSOFT GRAPH API WAS SET...  Send http://localhost:3000/sync in postman to start sync...',
+    );
     this.token = await this.authenticate();
   };
 
