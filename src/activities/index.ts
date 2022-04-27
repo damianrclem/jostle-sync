@@ -1,1 +1,1 @@
-export { getJostleUsers } from './getJostleUsers'
+export { getJostleUsers } from './getJostleUsers';
