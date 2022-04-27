@@ -23,7 +23,7 @@ async function run() {
 
   // create microsoft graph api client
   const microsoftGraphApiClient = createMicrosoftGraphApiClient();
-  microsoftGraphApiClient.setToken();
+  await microsoftGraphApiClient.setToken();
 
   // NOTE: how does this connect to temporal? https://github.com/temporalio/sdk-typescript/blob/a7e87946a2644765b12f377d4b53c0bff312992e/packages/test/src/load/worker.ts#L43
   const worker = await Worker.create({
