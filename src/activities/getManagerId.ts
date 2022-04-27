@@ -9,6 +9,7 @@ export const getManagerIdFactory = (microsoftGraphApiClient: MicrosoftGraphClien
   getManagerId: async (principalName: string): Promise<GetManagerResponse | undefined> => {
     const response = await microsoftGraphApiClient.getUser(principalName);
 
+    // check
     if (!response?.id || !response?.displayName) {
       return undefined;
     }
