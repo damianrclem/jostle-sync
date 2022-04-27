@@ -51,12 +51,9 @@ export class MicrosoftGraphClient {
     this.tenantId = args.tenantId;
     this.clientId = args.clientId;
     this.clientSecret = args.clientSecret;
-    // The token can get set once when the client is initialized in the worker
-    // Will prevent the token from having to get called every time an endpoint is called
-    this.authenticate();
   }
 
-  private authenticate = async (): Promise<void> => {
+  private authenticate = async (): Promise<string> => {
     const params = new URLSearchParams();
     params.append('client_secret', this.clientSecret);
     params.append('client_id', this.clientId);
@@ -72,7 +69,11 @@ export class MicrosoftGraphClient {
     );
 
     const { data } = response;
-    this.token = data.access_token;
+    return data.access_token;
+  };
+
+  setToken = async () => {
+    this.token = await this.authenticate();
   };
 
   getUsers = async (): Promise<GetUsersResponse> => {
