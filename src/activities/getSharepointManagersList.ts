@@ -17,6 +17,8 @@ export const getSharepointManagersListFactory = (microsoftGraphApiClient: Micros
 
     const response = await microsoftGraphApiClient.getSharepointList(siteId, listId);
 
+    console.log(response?.value[0].fields);
+
     if (!response?.value) {
       return undefined;
     }
@@ -25,7 +27,9 @@ export const getSharepointManagersListFactory = (microsoftGraphApiClient: Micros
     // TODO: the field properties for the returned list will need updated
 
     return response?.value.map((user) => ({
+      id: user.fields.id,
       displayName: user.fields.field_6,
+      userPrincipalName: user.fields.field_31,
       userId: user.fields.field_16,
       managerLookupId: user.fields.Assigned_x0020_ManagerLookupId!,
     }));

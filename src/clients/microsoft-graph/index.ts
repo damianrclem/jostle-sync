@@ -1,20 +1,22 @@
 /* eslint-disable camelcase */
 import axios from 'axios';
 import { EnvironmentConfigurationError } from '../../errors';
-import { ActiveDirectoryUser, ManagerLookupFields, GetManagerResponse } from '../../types';
+import { ActiveDirectoryUser, ManagerLookupFields, GetManagerResponse, ListFieldValueSet } from '../../types';
 
 //  !!! This fields will change !!!
 // TODO: the field properties for the returned list will need updated
-export interface ManagerListFields {
+export interface UserManagerListFields {
   fields: {
+    id: string;
     field_6: string;
     field_16: string;
+    field_31: string;
     Assigned_x0020_ManagerLookupId?: string;
   };
 }
 
 interface GetSharepointManagerListResponse {
-  value: Array<ManagerListFields>;
+  value: Array<UserManagerListFields>;
   'odata.nextLink'?: string;
 }
 
@@ -142,6 +144,19 @@ export class MicrosoftGraphClient {
 
   updateUser = async (idOrUserPrincipalName: string, userDetails: ActiveDirectoryUser): Promise<void> => {
     await axios.patch(`${this.baseUrl}/v1.0/users/${idOrUserPrincipalName}`, userDetails, {
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+      },
+    });
+  };
+
+  updateListItem = async (
+    siteId: string,
+    listId: string,
+    itemId: string,
+    fieldValueSet: ListFieldValueSet,
+  ): Promise<void> => {
+    await axios.patch(`${this.baseUrl}/v1.0/sites/${siteId}/lists/${listId}/items/${itemId}/fields`, fieldValueSet, {
       headers: {
         Authorization: `Bearer ${this.token}`,
       },

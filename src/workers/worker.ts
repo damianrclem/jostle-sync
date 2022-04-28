@@ -8,6 +8,7 @@ import { getSharepointManagersListFactory } from '../activities/getSharepointMan
 import { getManagerByLookupIdFactory } from '../activities/getManagerByLookupId';
 import { getManagerIdFactory } from '../activities/getManagerId';
 import { updateUsersManagerFactory } from '../activities/updateUsersManager';
+import { updateSharepointUserFactory } from '../activities/updateSharepointUser';
 
 import { createMicrosoftGraphApiClient } from '../clients/microsoft-graph';
 
@@ -35,6 +36,7 @@ async function run() {
       ...getManagerByLookupIdFactory(microsoftGraphApiClient),
       ...getManagerIdFactory(microsoftGraphApiClient),
       ...updateUsersManagerFactory(microsoftGraphApiClient),
+      ...updateSharepointUserFactory(microsoftGraphApiClient),
     },
     taskQueue: 'jostle-ad-sync',
   });

@@ -11,6 +11,8 @@ export interface JostleUser {
   OfficialLocation: string;
   SecondBadge: string;
   EmployeeId: string;
+  'Full-time/Part-time': string;
+  'Licensed States': string;
   CustomFilterCategory: string;
   CustomProfileCategory: string;
   PrimaryRoleName: string;
@@ -69,6 +71,13 @@ export interface ActiveDirectoryUser {
   department: string;
 }
 
+export interface SharepointUserList {
+  userPrincipalName: string;
+  displayName: string;
+  fulltimeParttime: string;
+  licensedState: string;
+}
+
 export interface ManagerLookupFields {
   ImnName: string;
   UserName: string;
@@ -80,7 +89,14 @@ export interface GetManagerResponse {
 }
 
 export interface UsersManagerListResponse {
+  id: string;
   displayName: string;
   userId: string;
   managerLookupId: string;
+  userPrincipalName: string;
+}
+
+export interface ListFieldValueSet {
+  FulltimeParttime: string;
+  LicensedStates: string;
 }
