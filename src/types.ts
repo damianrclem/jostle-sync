@@ -96,9 +96,9 @@ export interface UsersManagerListResponse {
   userPrincipalName: string;
 }
 
-export interface ListFieldValueSet {
+export interface ListFieldColumnValueSet {
   FulltimeParttime?: string;
   LicensedStates?: string;
-  Department?: string;
+  field_4?: string;
   NMLS?: string;
 }

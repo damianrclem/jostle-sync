@@ -143,38 +143,38 @@ export async function syncJostleUsersWorkflow(): Promise<void> {
   console.log('UPDATING SHAREPOINT USERS LIST');
   await updateSharepointUserList(jostleUsers, sharepointUsersList);
 
-  console.log('UPDATING USERS PROFILE');
-  const activeDirectorySyncResults = await Promise.allSettled(jostleUsers.map((user) => syncActiveDirectoryUser(user)));
-  const activeDirectoryUsersSuccessfullyUpdated = activeDirectorySyncResults.filter(
-    (result) => result.status === 'fulfilled',
-  ).length;
-  const activeDirectoryUsersFailedToUpdated = activeDirectorySyncResults.filter(
-    (result) => result.status === 'rejected',
-  ).length;
+  // console.log('UPDATING USERS PROFILE');
+  // const activeDirectorySyncResults = await Promise.allSettled(jostleUsers.map((user) => syncActiveDirectoryUser(user)));
+  // const activeDirectoryUsersSuccessfullyUpdated = activeDirectorySyncResults.filter(
+  //   (result) => result.status === 'fulfilled',
+  // ).length;
+  // const activeDirectoryUsersFailedToUpdated = activeDirectorySyncResults.filter(
+  //   (result) => result.status === 'rejected',
+  // ).length;
 
-  console.log('UPDATING USERS MANAGER');
-  await updateAdUsersManager(sharepointUsersList);
+  // console.log('UPDATING USERS MANAGER');
+  // await updateAdUsersManager(sharepointUsersList);
 
-  const result: SyncJostleUsersResult = {
-    jostleUsersToSync: jostleUsers.length,
-    activeDirectoryResults: {
-      usersSuccessfullyUpdated: activeDirectoryUsersSuccessfullyUpdated,
-      usersFailedToUpdate: activeDirectoryUsersFailedToUpdated,
-    },
-    userManagersAssignedResults: {
-      totalUsers: sharepointUsersList.length,
-      userManagersNotAssigned: {
-        assignedManagers: false,
-        total: noManagerAssigned.length,
-        users: JSON.stringify(noManagerAssigned),
-      },
-      userManagersAssigned: {
-        assignedManagers: true,
-        total: managerAssigned.length,
-        users: JSON.stringify(managerAssigned),
-      },
-    },
-  };
+  // const result: SyncJostleUsersResult = {
+  //   jostleUsersToSync: jostleUsers.length,
+  //   activeDirectoryResults: {
+  //     usersSuccessfullyUpdated: activeDirectoryUsersSuccessfullyUpdated,
+  //     usersFailedToUpdate: activeDirectoryUsersFailedToUpdated,
+  //   },
+  //   userManagersAssignedResults: {
+  //     totalUsers: sharepointUsersList.length,
+  //     userManagersNotAssigned: {
+  //       assignedManagers: false,
+  //       total: noManagerAssigned.length,
+  //       users: JSON.stringify(noManagerAssigned),
+  //     },
+  //     userManagersAssigned: {
+  //       assignedManagers: true,
+  //       total: managerAssigned.length,
+  //       users: JSON.stringify(managerAssigned),
+  //     },
+  //   },
+  // };
 
-  console.log(result);
+  // console.log(result);
 }

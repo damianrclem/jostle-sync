@@ -30,6 +30,7 @@ export const getSharepointManagersListFactory = (microsoftGraphApiClient: Micros
       userPrincipalName: user.fields.field_31,
       userId: user.fields.field_16,
       managerLookupId: user.fields.Assigned_x0020_ManagerLookupId!,
+      department: user.fields.field_4,
     }));
   },
 });

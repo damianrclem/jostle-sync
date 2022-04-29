@@ -1,6 +1,6 @@
 import { MicrosoftGraphClient } from '../clients/microsoft-graph';
 import { mapJostleUserToSharepointUser } from '../helpers/jostleUserToSharepointUser';
-import { JostleUser, ListFieldValueSet, UsersManagerListResponse } from '../types';
+import { JostleUser, ListFieldColumnValueSet, UsersManagerListResponse } from '../types';
 import { EnvironmentConfigurationError } from '../errors';
 
 export const updateSharepointUserFactory = (microsoftGraphApiClient: MicrosoftGraphClient) => ({
@@ -27,10 +27,11 @@ export const updateSharepointUserFactory = (microsoftGraphApiClient: MicrosoftGr
       );
 
       if (sharepointUser) {
-        const fieldValues: ListFieldValueSet = {
+        const fieldValues: ListFieldColumnValueSet = {
           LicensedStates: jostleUser.licensedState || '',
           FulltimeParttime: jostleUser.fulltimeParttime || '',
           NMLS: jostleUser.NMLS || '',
+          field_4: jostleUser.department || '',
         };
         await microsoftGraphApiClient.updateListItem(siteId, listId, sharepointUser.id, fieldValues);
       }
