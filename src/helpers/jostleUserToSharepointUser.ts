@@ -13,7 +13,6 @@ export const mapJostleUserToSharepointUser = (jostleUser: JostleUser): Sharepoin
   const joinDepartments = departments.join('|');
 
   const licensedStatesExpression = new RegExp(`(${joinStates})|[^]`, 'g');
-
   const departmentExpression = new RegExp(`(${joinDepartments})|[^]`, 'g');
 
   const sharepointUser: SharepointUserListColumns = {

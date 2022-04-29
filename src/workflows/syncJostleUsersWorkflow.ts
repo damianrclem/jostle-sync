@@ -153,7 +153,6 @@ export async function syncJostleUsersWorkflow(): Promise<void> {
   ).length;
 
   console.log('UPDATING USERS MANAGER');
-
   await updateAdUsersManager(sharepointUsersList);
 
   const result: SyncJostleUsersResult = {

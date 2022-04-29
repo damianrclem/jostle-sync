@@ -5,7 +5,7 @@ import { ActiveDirectoryUser, ManagerLookupFields, GetManagerResponse, ListField
 
 //  !!! This fields will change !!!
 // TODO: the field properties for the returned list will need updated
-export interface UserManagerListFields {
+export interface SharepointUsersListFields {
   fields: {
     id: string; // List ID
     field_6: string; // Display Name
@@ -15,8 +15,8 @@ export interface UserManagerListFields {
   };
 }
 
-interface GetSharepointManagerListResponse {
-  value: Array<UserManagerListFields>;
+interface GetSharepointUsersListResponse {
+  value: Array<SharepointUsersListFields>;
   'odata.nextLink'?: string;
 }
 
@@ -88,7 +88,7 @@ export class MicrosoftGraphClient {
     return response.data as GetUsersResponse;
   };
 
-  getSharepointList = async (siteId: string, listId: string): Promise<GetSharepointManagerListResponse | undefined> => {
+  getSharepointList = async (siteId: string, listId: string): Promise<GetSharepointUsersListResponse | undefined> => {
     const response = await axios.get(
       `${this.baseUrl}/v1.0/sites/${siteId}/lists/${listId}/items/?expand=fields,columns&top=10000`,
       {
@@ -98,7 +98,7 @@ export class MicrosoftGraphClient {
       },
     );
 
-    return response.data as GetSharepointManagerListResponse;
+    return response.data as GetSharepointUsersListResponse;
   };
 
   getUserByLookupId = async (
