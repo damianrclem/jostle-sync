@@ -82,3 +82,5 @@ export const departments = [
   'Systems Engineering',
   'Human Resources',
 ];
+
+export const parttimeFulltime = ['Part-time', 'Full-time'];

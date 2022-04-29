@@ -1,6 +1,6 @@
 import { DEV_TENANT_ID } from '../constants';
 import { JostleUser, SharepointUserListColumns } from '../types';
-import { states, departments } from './regexLookups';
+import { states, departments, parttimeFulltime } from './regexLookups';
 
 export const mapJostleUserToSharepointUser = (jostleUser: JostleUser): SharepointUserListColumns => {
   // If we are operating against the dev tenant, change the email domain to the dev domain.
@@ -11,14 +11,16 @@ export const mapJostleUserToSharepointUser = (jostleUser: JostleUser): Sharepoin
 
   const joinStates = states.join('|');
   const joinDepartments = departments.join('|');
+  const joinParttimeFulltime = parttimeFulltime.join('|');
 
   const licensedStatesExpression = new RegExp(`(${joinStates})|[^]`, 'g');
   const departmentExpression = new RegExp(`(${joinDepartments})|[^]`, 'g');
+  const parttimeFulltimeExpression = new RegExp(`(${joinParttimeFulltime})|[^]`, 'g');
 
   const sharepointUser: SharepointUserListColumns = {
     displayName: `${jostleUser.FirstName} ${jostleUser.LastName}`,
     userPrincipalName: email,
-    fulltimeParttime: jostleUser.CustomFilterCategory.replace(/(Full-time|Part-time)|[^]/g, '$1'),
+    fulltimeParttime: jostleUser.CustomFilterCategory.replace(parttimeFulltimeExpression, '$1'),
     licensedState: jostleUser.CustomFilterCategory.replace(licensedStatesExpression, '$1'),
     department: jostleUser.CustomFilterCategory.replace(departmentExpression, '$1'),
     NMLS: jostleUser.WorkMessagingId,
