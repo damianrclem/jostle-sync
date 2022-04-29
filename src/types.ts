@@ -69,7 +69,7 @@ export interface ActiveDirectoryUser {
   department: string;
 }
 
-export interface SharepointUserList {
+export interface SharepointUserListColumns {
   userPrincipalName: string;
   displayName: string;
   fulltimeParttime?: string;
