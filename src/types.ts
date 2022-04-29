@@ -104,6 +104,5 @@ export interface ListFieldColumnValueSet {
 }
 
 export interface UpdatedSharepointUsersResponse {
-  sharepointUsersUpdated: object;
-  sharepointUsersNotUpdates: object;
+  user: string;
 }

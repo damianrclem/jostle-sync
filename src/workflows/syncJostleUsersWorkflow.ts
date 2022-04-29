@@ -63,6 +63,10 @@ const { updateSharepointUserList } = proxyActivities<ReturnType<typeof updateSha
 
 interface SyncJostleUsersResult {
   jostleUsersToSync: number;
+  updateSharepointUsersListResponse: {
+    sharepointUsersUpdated: string;
+    sharepointUsersNotUpdated: string;
+  };
   activeDirectoryResults: {
     usersSuccessfullyUpdated: number;
     usersFailedToUpdate: number;
@@ -141,7 +145,7 @@ export async function syncJostleUsersWorkflow(): Promise<void> {
   if (!sharepointUsersList) throw new Error('Manager list is empty!');
 
   console.log('UPDATING SHAREPOINT USERS LIST');
-  await updateSharepointUserList(jostleUsers, sharepointUsersList);
+  const updatedSharepointUsersListResponse = await updateSharepointUserList(jostleUsers, sharepointUsersList);
 
   console.log('UPDATING USERS PROFILE');
   const activeDirectorySyncResults = await Promise.allSettled(jostleUsers.map((user) => syncActiveDirectoryUser(user)));
@@ -157,6 +161,10 @@ export async function syncJostleUsersWorkflow(): Promise<void> {
 
   const result: SyncJostleUsersResult = {
     jostleUsersToSync: jostleUsers.length,
+    updateSharepointUsersListResponse: {
+      sharepointUsersUpdated: JSON.stringify(updatedSharepointUsersListResponse.sharepointUsersUpdated),
+      sharepointUsersNotUpdated: JSON.stringify(updatedSharepointUsersListResponse.sharepointUsersNotUpdated),
+    },
     activeDirectoryResults: {
       usersSuccessfullyUpdated: activeDirectoryUsersSuccessfullyUpdated,
       usersFailedToUpdate: activeDirectoryUsersFailedToUpdated,
