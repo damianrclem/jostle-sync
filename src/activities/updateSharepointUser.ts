@@ -6,7 +6,7 @@ import { EnvironmentConfigurationError } from '../errors';
 export const updateSharepointUserFactory = (microsoftGraphApiClient: MicrosoftGraphClient) => ({
   updateSharepointUserList: async (
     jostleUsers: Array<JostleUser>,
-    sharePointUsersList: Array<UsersManagerListResponse>,
+    sharepointUsersList: Array<UsersManagerListResponse>,
   ) => {
     if (!process.env.MS_GRAPH_API_SITE_ID) {
       throw new EnvironmentConfigurationError('Missing MS_GRAPH_API_SITE_ID env variable');
@@ -22,7 +22,7 @@ export const updateSharepointUserFactory = (microsoftGraphApiClient: MicrosoftGr
     for (let i = 0; i < jostleUsers.length; i += 1) {
       const jostleUser = mapJostleUserToSharepointUser(jostleUsers[i]);
 
-      const sharepointUser = sharePointUsersList.find(
+      const sharepointUser = sharepointUsersList.find(
         (spUser) => spUser.userPrincipalName === jostleUser.userPrincipalName,
       );
 

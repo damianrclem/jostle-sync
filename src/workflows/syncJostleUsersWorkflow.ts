@@ -93,14 +93,14 @@ interface UpdateUserManagerResults {
 const noManagerAssigned: object[] = [];
 const managerAssigned: object[] = [];
 
-const updateAdUsersManager = async (sharePointUsersList: Array<UsersManagerListResponse>) => {
+const updateAdUsersManager = async (sharepointUsersList: Array<UsersManagerListResponse>) => {
   // Loop thru user's manager list
-  for (let i = 0; sharePointUsersList.length > i; i += 1) {
-    if (!sharePointUsersList[i].managerLookupId) {
+  for (let i = 0; sharepointUsersList.length > i; i += 1) {
+    if (!sharepointUsersList[i].managerLookupId) {
       const updatedUserManagerResults: UpdateUserManagerResults = {
         assignedManager: false,
-        updateUsersManagerFor: sharePointUsersList[i].displayName,
-        userId: sharePointUsersList[i].userId,
+        updateUsersManagerFor: sharepointUsersList[i].displayName,
+        userId: sharepointUsersList[i].userId,
       };
 
       noManagerAssigned.push(updatedUserManagerResults);
@@ -108,7 +108,7 @@ const updateAdUsersManager = async (sharePointUsersList: Array<UsersManagerListR
     }
 
     // Look up manager by their lookup ID for given user
-    const managerLookup = await getManagerByLookupId(sharePointUsersList[i].managerLookupId);
+    const managerLookup = await getManagerByLookupId(sharepointUsersList[i].managerLookupId);
     if (!managerLookup) {
       continue;
     }
@@ -120,12 +120,12 @@ const updateAdUsersManager = async (sharePointUsersList: Array<UsersManagerListR
     }
 
     // Finally, update users manager in AD
-    await updateUsersManager(sharePointUsersList[i].userId, manager.id);
+    await updateUsersManager(sharepointUsersList[i].userId, manager.id);
 
     const updatedUserManagerResults: UpdateUserManagerResults = {
       assignedManager: true,
-      updateUsersManagerFor: sharePointUsersList[i].displayName,
-      userId: sharePointUsersList[i].userId,
+      updateUsersManagerFor: sharepointUsersList[i].displayName,
+      userId: sharepointUsersList[i].userId,
       usersManager: manager.displayName,
       usersManagerId: manager.id,
     };
@@ -137,11 +137,11 @@ const updateAdUsersManager = async (sharePointUsersList: Array<UsersManagerListR
 export async function syncJostleUsersWorkflow(): Promise<void> {
   const jostleUsers = await getJostleUsers();
 
-  const sharePointUsersList = await getSharepointManagersList();
-  if (!sharePointUsersList) throw new Error('Manager list is empty!');
+  const sharepointUsersList = await getSharepointManagersList();
+  if (!sharepointUsersList) throw new Error('Manager list is empty!');
 
   console.log('UPDATING SHAREPOINT USERS LIST');
-  await updateSharepointUserList(jostleUsers, sharePointUsersList);
+  await updateSharepointUserList(jostleUsers, sharepointUsersList);
 
   console.log('UPDATING USERS PROFILE');
   const activeDirectorySyncResults = await Promise.allSettled(jostleUsers.map((user) => syncActiveDirectoryUser(user)));
@@ -154,7 +154,7 @@ export async function syncJostleUsersWorkflow(): Promise<void> {
 
   console.log('UPDATING USERS MANAGER');
 
-  await updateAdUsersManager(sharePointUsersList);
+  await updateAdUsersManager(sharepointUsersList);
 
   const result: SyncJostleUsersResult = {
     jostleUsersToSync: jostleUsers.length,
@@ -163,7 +163,7 @@ export async function syncJostleUsersWorkflow(): Promise<void> {
       usersFailedToUpdate: activeDirectoryUsersFailedToUpdated,
     },
     userManagersAssignedResults: {
-      totalUsers: sharePointUsersList.length,
+      totalUsers: sharepointUsersList.length,
       userManagersNotAssigned: {
         assignedManagers: false,
         total: noManagerAssigned.length,
