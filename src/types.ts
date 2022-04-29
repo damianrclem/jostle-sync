@@ -102,3 +102,8 @@ export interface ListFieldColumnValueSet {
   field_4?: string;
   NMLS?: string;
 }
+
+export interface UpdatedSharepointUsersResponse {
+  sharepointUsersUpdated: object;
+  sharepointUsersNotUpdates: object;
+}

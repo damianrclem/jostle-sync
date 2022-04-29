@@ -1,6 +1,11 @@
 import { MicrosoftGraphClient } from '../clients/microsoft-graph';
 import { mapJostleUserToSharepointUser } from '../helpers/jostleUserToSharepointUser';
-import { JostleUser, ListFieldColumnValueSet, UsersManagerListResponse } from '../types';
+import {
+  JostleUser,
+  ListFieldColumnValueSet,
+  UsersManagerListResponse,
+  UpdatedSharepointUsersResponse,
+} from '../types';
 import { EnvironmentConfigurationError } from '../errors';
 
 export const updateSharepointUserFactory = (microsoftGraphApiClient: MicrosoftGraphClient) => ({
@@ -18,6 +23,8 @@ export const updateSharepointUserFactory = (microsoftGraphApiClient: MicrosoftGr
 
     const siteId = process.env.MS_GRAPH_API_SITE_ID;
     const listId = process.env.MS_GRAPH_API_LIST_ID;
+    const sharepointUsersUpdated = [];
+    const sharepointUsersNotUpdates = [];
 
     for (let i = 0; i < jostleUsers.length; i += 1) {
       const jostleUser = mapJostleUserToSharepointUser(jostleUsers[i]);
@@ -34,6 +41,14 @@ export const updateSharepointUserFactory = (microsoftGraphApiClient: MicrosoftGr
           field_4: jostleUser.department || '',
         };
         await microsoftGraphApiClient.updateListItem(siteId, listId, sharepointUser.id, fieldValues);
+
+        sharepointUsersUpdated.push({
+          user: `${jostleUsers[i].FirstName} ${jostleUsers[i].LastName}`,
+        });
+      } else {
+        sharepointUsersNotUpdates.push({
+          user: `${jostleUsers[i].FirstName} ${jostleUsers[i].LastName}`,
+        });
       }
     }
   },
