@@ -18,7 +18,10 @@ export const mapJostleUserToSharepointUser = (jostleUser: JostleUser): Sharepoin
     displayName: `${jostleUser.FirstName} ${jostleUser.LastName}`,
     userPrincipalName: userEmail,
     fulltimeParttime: jostleUser.CustomFilterCategory.replace(parttimeFulltimeExpression, '$1'),
-    licensedState: jostleUser.CustomFilterCategory.replace(licensedStatesExpression, '$1'),
+    licensedState: jostleUser.CustomFilterCategory.replace(licensedStatesExpression, '$1 ')
+      .trim()
+      .split(/[ ,]+/)
+      .join(','),
     department: jostleUser.CustomFilterCategory.replace(departmentExpression, '$1'),
     NMLS: jostleUser.WorkMessagingId,
   };
