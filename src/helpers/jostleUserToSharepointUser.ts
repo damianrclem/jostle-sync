@@ -1,13 +1,10 @@
-import { DEV_TENANT_ID } from '../constants';
 import { JostleUser, SharepointUserListColumns } from '../types';
 import { states, departments, parttimeFulltime } from './regexLookups';
+import { email } from './utilities';
 
 export const mapJostleUserToSharepointUser = (jostleUser: JostleUser): SharepointUserListColumns => {
   // If we are operating against the dev tenant, change the email domain to the dev domain.
-  const email =
-    process.env.MS_GRAPH_API_TENANT_ID === DEV_TENANT_ID
-      ? jostleUser.WorkEmail.replace('revolutionmortgage.com', 'devrevmtg.onmicrosoft.com')
-      : jostleUser.WorkEmail;
+  const userEmail = email(jostleUser);
 
   const joinStates = states.join('|');
   const joinDepartments = departments.join('|');
@@ -19,7 +16,7 @@ export const mapJostleUserToSharepointUser = (jostleUser: JostleUser): Sharepoin
 
   const sharepointUser: SharepointUserListColumns = {
     displayName: `${jostleUser.FirstName} ${jostleUser.LastName}`,
-    userPrincipalName: email,
+    userPrincipalName: userEmail,
     fulltimeParttime: jostleUser.CustomFilterCategory.replace(parttimeFulltimeExpression, '$1'),
     licensedState: jostleUser.CustomFilterCategory.replace(licensedStatesExpression, '$1'),
     department: jostleUser.CustomFilterCategory.replace(departmentExpression, '$1'),

@@ -1,16 +1,13 @@
-import { DEV_TENANT_ID } from '../constants';
 import { ActiveDirectoryUser, JostleUser } from '../types';
+import { email } from './utilities';
 
 export const mapJostleUserToActiveDirectoryUser = (jostleUser: JostleUser): ActiveDirectoryUser => {
   // If we are operating against the dev tenant, change the email domain to the dev domain.
-  const email =
-    process.env.MS_GRAPH_API_TENANT_ID === DEV_TENANT_ID
-      ? jostleUser.WorkEmail.replace('revolutionmortgage.com', 'devrevmtg.onmicrosoft.com')
-      : jostleUser.WorkEmail;
+  const userEmail = email(jostleUser);
 
   const activeDirectoryUser: ActiveDirectoryUser = {
-    userPrincipalName: email,
-    mail: email,
+    userPrincipalName: userEmail,
+    mail: userEmail,
     displayName: `${jostleUser.FirstName} ${jostleUser.LastName}`,
     givenName: jostleUser.FirstName,
     surname: jostleUser.LastName,
