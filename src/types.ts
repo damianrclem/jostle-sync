@@ -11,8 +11,6 @@ export interface JostleUser {
   OfficialLocation: string;
   SecondBadge: string;
   EmployeeId: string;
-  'Full-time/Part-time': string;
-  'Licensed States': string;
   CustomFilterCategory: string;
   CustomProfileCategory: string;
   PrimaryRoleName: string;
