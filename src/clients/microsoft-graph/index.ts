@@ -7,11 +7,11 @@ import { ActiveDirectoryUser, ManagerLookupFields, GetManagerResponse, ListField
 // TODO: the field properties for the returned list will need updated
 export interface UserManagerListFields {
   fields: {
-    id: string;
-    field_6: string;
-    field_16: string;
-    field_31: string;
-    Assigned_x0020_ManagerLookupId?: string;
+    id: string; // List ID
+    field_6: string; // Display Name
+    field_16: string; // User ID
+    field_31: string; // User Principal Name
+    Assigned_x0020_ManagerLookupId?: string; // Manager Lookup ID
   };
 }
 
