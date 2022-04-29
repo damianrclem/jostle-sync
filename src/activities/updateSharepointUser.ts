@@ -4,7 +4,10 @@ import { JostleUser, ListFieldValueSet, UsersManagerListResponse } from '../type
 import { EnvironmentConfigurationError } from '../errors';
 
 export const updateSharepointUserFactory = (microsoftGraphApiClient: MicrosoftGraphClient) => ({
-  updateSharepointUserList: async (jostleUser: JostleUser, sharePointUsersList: Array<UsersManagerListResponse>) => {
+  updateSharepointUserList: async (
+    jostleUsers: Array<JostleUser>,
+    sharePointUsersList: Array<UsersManagerListResponse>,
+  ) => {
     if (!process.env.MS_GRAPH_API_SITE_ID) {
       throw new EnvironmentConfigurationError('Missing MS_GRAPH_API_SITE_ID env variable');
     }
@@ -16,16 +19,18 @@ export const updateSharepointUserFactory = (microsoftGraphApiClient: MicrosoftGr
     const siteId = process.env.MS_GRAPH_API_SITE_ID;
     const listId = process.env.MS_GRAPH_API_LIST_ID;
 
-    const user = mapJostleUserToSharepointUser(jostleUser);
+    for (let i = 0; i < jostleUsers.length; i += 1) {
+      const jUser = mapJostleUserToSharepointUser(jostleUsers[i]);
 
-    const fieldValues: ListFieldValueSet = {
-      LicensedStates: user.licensedState,
-      FulltimeParttime: user.userPrincipalName,
-    };
+      const sharepointUser = sharePointUsersList.find((spUser) => spUser.userPrincipalName === jUser.userPrincipalName);
 
-    for (let i = 0; i < sharePointUsersList.length; i += 1) {
-      if (user.userPrincipalName === sharePointUsersList[i].userPrincipalName) {
-        await microsoftGraphApiClient.updateListItem(siteId, listId, '1', fieldValues);
+      if (sharepointUser) {
+        const fieldValues: ListFieldValueSet = {
+          LicensedStates: jUser.licensedState || '',
+          FulltimeParttime: jUser.fulltimeParttime || '',
+          NMLS: jUser.NMLS || '',
+        };
+        await microsoftGraphApiClient.updateListItem(siteId, listId, sharepointUser.id, fieldValues);
       }
     }
   },

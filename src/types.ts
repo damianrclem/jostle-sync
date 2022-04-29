@@ -74,8 +74,10 @@ export interface ActiveDirectoryUser {
 export interface SharepointUserList {
   userPrincipalName: string;
   displayName: string;
-  fulltimeParttime: string;
-  licensedState: string;
+  fulltimeParttime?: string;
+  licensedState?: string;
+  department?: string;
+  NMLS: string;
 }
 
 export interface ManagerLookupFields {
@@ -97,6 +99,8 @@ export interface UsersManagerListResponse {
 }
 
 export interface ListFieldValueSet {
-  FulltimeParttime: string;
-  LicensedStates: string;
+  FulltimeParttime?: string;
+  LicensedStates?: string;
+  Department?: string;
+  NMLS?: string;
 }

@@ -135,9 +135,16 @@ const updateAdUsersManager = async (sharePointUsersList: Array<UsersManagerListR
 };
 
 export async function syncJostleUsersWorkflow(): Promise<void> {
-  console.log('UPDATING USERS PROFILE');
-
   const jostleUsers = await getJostleUsers();
+
+  const sharePointUsersList = await getSharepointManagersList();
+  if (!sharePointUsersList) throw new Error('Manager list is empty!');
+
+  console.log('UPDATING SHAREPOINT USERS LIST');
+
+  await updateSharepointUserList(jostleUsers, sharePointUsersList);
+
+  console.log('UPDATING USERS PROFILE');
   // const activeDirectorySyncResults = await Promise.allSettled(jostleUsers.map((user) => syncActiveDirectoryUser(user)));
   // const activeDirectoryUsersSuccessfullyUpdated = activeDirectorySyncResults.filter(
   //   (result) => result.status === 'fulfilled',
@@ -146,14 +153,9 @@ export async function syncJostleUsersWorkflow(): Promise<void> {
   //   (result) => result.status === 'rejected',
   // ).length;
 
-  const sharePointUsersList = await getSharepointManagersList();
-  if (!sharePointUsersList) throw new Error('Manager list is empty!');
-
   // console.log('UPDATING USERS MANAGER');
 
   // await updateAdUsersManager(sharePointUsersList);
-
-  await Promise.allSettled(jostleUsers.map((jostleUser) => updateSharepointUserList(jostleUser, sharePointUsersList)));
 
   // const result: SyncJostleUsersResult = {
   //   jostleUsersToSync: jostleUsers.length,
