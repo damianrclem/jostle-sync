@@ -20,15 +20,17 @@ export const updateSharepointUserFactory = (microsoftGraphApiClient: MicrosoftGr
     const listId = process.env.MS_GRAPH_API_LIST_ID;
 
     for (let i = 0; i < jostleUsers.length; i += 1) {
-      const jUser = mapJostleUserToSharepointUser(jostleUsers[i]);
+      const jostleUser = mapJostleUserToSharepointUser(jostleUsers[i]);
 
-      const sharepointUser = sharePointUsersList.find((spUser) => spUser.userPrincipalName === jUser.userPrincipalName);
+      const sharepointUser = sharePointUsersList.find(
+        (spUser) => spUser.userPrincipalName === jostleUser.userPrincipalName,
+      );
 
       if (sharepointUser) {
         const fieldValues: ListFieldValueSet = {
-          LicensedStates: jUser.licensedState || '',
-          FulltimeParttime: jUser.fulltimeParttime || '',
-          NMLS: jUser.NMLS || '',
+          LicensedStates: jostleUser.licensedState || '',
+          FulltimeParttime: jostleUser.fulltimeParttime || '',
+          NMLS: jostleUser.NMLS || '',
         };
         await microsoftGraphApiClient.updateListItem(siteId, listId, sharepointUser.id, fieldValues);
       }
