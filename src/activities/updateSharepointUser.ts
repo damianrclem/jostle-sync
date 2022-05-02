@@ -30,7 +30,7 @@ export const updateSharepointUserFactory = (microsoftGraphApiClient: MicrosoftGr
 
       if (sharepointUser) {
         const fieldValues: ListFieldColumnValueSet = {
-          LicensedStates: jostleUser.licensedState || '',
+          LicensedStates: jostleUser.licensedStates || '',
           FulltimeParttime: jostleUser.fulltimeParttime || '',
           NMLS: jostleUser.NMLS || '',
           field_4: jostleUser.department || '',

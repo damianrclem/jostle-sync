@@ -73,7 +73,7 @@ export interface SharepointUserListColumns {
   userPrincipalName: string;
   displayName: string;
   fulltimeParttime?: string;
-  licensedState?: string;
+  licensedStates?: string;
   department?: string;
   NMLS: string;
 }

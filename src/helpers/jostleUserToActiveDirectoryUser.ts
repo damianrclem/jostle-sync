@@ -1,9 +1,11 @@
 import { ActiveDirectoryUser, JostleUser } from '../types';
-import { email } from './utilities';
+import { email, department } from './utilities';
 
 export const mapJostleUserToActiveDirectoryUser = (jostleUser: JostleUser): ActiveDirectoryUser => {
   // If we are operating against the dev tenant, change the email domain to the dev domain.
   const userEmail = email(jostleUser);
+
+  const usersDepartment = department(jostleUser);
 
   const activeDirectoryUser: ActiveDirectoryUser = {
     userPrincipalName: userEmail,
@@ -14,7 +16,7 @@ export const mapJostleUserToActiveDirectoryUser = (jostleUser: JostleUser): Acti
     employeeId: jostleUser.EmployeeId || undefined,
     officeLocation: jostleUser.OfficialLocation,
     jobTitle: jostleUser.PrimaryRoleName,
-    department: jostleUser.JobCategory,
+    department: usersDepartment,
   };
 
   return activeDirectoryUser;
