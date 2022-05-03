@@ -16,6 +16,11 @@ export const mapJostleUserToSharepointUser = (jostleUser: JostleUser): Sharepoin
     licensedStates: userLicensedStates,
     department: usersDepartment,
     NMLS: jostleUser.WorkMessagingId,
+    homeAddress: jostleUser.MailingAddress1Street,
+    homeCity: jostleUser.MailingAddress1City,
+    homeState: jostleUser.MailingAddress1State,
+    homePostalCode: jostleUser.MailingAddress1Zip,
+    mobilePhone: jostleUser.PersonalMobilePhone,
   };
 
   return sharepointUser;

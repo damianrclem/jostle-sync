@@ -36,6 +36,11 @@ export const updateSharepointUserFactory = (microsoftGraphApiClient: MicrosoftGr
           FulltimeParttime: jostleUser.fulltimeParttime || '',
           NMLS: jostleUser.NMLS || '',
           field_4: jostleUser.department || '',
+          field_27: jostleUser.homeAddress,
+          field_2: jostleUser.homeCity,
+          field_26: jostleUser.homeState,
+          field_20: jostleUser.homePostalCode,
+          field_14: jostleUser.mobilePhone,
         };
         await microsoftGraphApiClient.updateListItem(siteId, listId, sharepointUser.id, fieldValues);
 

@@ -76,6 +76,11 @@ export interface SharepointUserListColumns {
   licensedStates?: string;
   department?: string;
   NMLS: string;
+  homeAddress: string;
+  homeCity: string;
+  homeState: string;
+  homePostalCode: string;
+  mobilePhone: string;
 }
 
 export interface ManagerLookupFields {
