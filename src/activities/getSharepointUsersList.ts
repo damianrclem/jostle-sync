@@ -1,9 +1,9 @@
 import { MicrosoftGraphClient } from '../clients/microsoft-graph';
-import { UsersManagerListResponse } from '../types';
+import { SharepointUsersListResponse } from '../types';
 import { EnvironmentConfigurationError } from '../errors';
 
-export const getSharepointManagersListFactory = (microsoftGraphApiClient: MicrosoftGraphClient) => ({
-  getSharepointManagersList: async (): Promise<Array<UsersManagerListResponse> | undefined> => {
+export const getSharepointUsersListFactory = (microsoftGraphApiClient: MicrosoftGraphClient) => ({
+  getSharepointUsersList: async (): Promise<Array<SharepointUsersListResponse> | undefined> => {
     if (!process.env.MS_GRAPH_API_SITE_ID) {
       throw new EnvironmentConfigurationError('Missing MS_GRAPH_API_SITE_ID env variable');
     }
@@ -21,13 +21,20 @@ export const getSharepointManagersListFactory = (microsoftGraphApiClient: Micros
       return undefined;
     }
 
-    // Build readable object to work with
+    //  !!! These fields will change !!!
     // TODO: the field properties for the returned list will need updated
-
     return response?.value.map((user) => ({
+      id: user.fields.id!,
       displayName: user.fields.field_6,
-      userId: user.fields.field_16,
+      userPrincipalName: user.fields.field_31,
+      userId: user.fields.field_16!,
       managerLookupId: user.fields.Assigned_x0020_ManagerLookupId!,
+      department: user.fields.field_4,
+      homeAddress: user.fields.field_27,
+      homeCity: user.fields.field_2,
+      homePostalCode: user.fields.field_20,
+      homeState: user.fields.field_26,
+      mobilePhone: user.fields.field_14,
     }));
   },
 });

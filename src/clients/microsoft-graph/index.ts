@@ -1,20 +1,16 @@
 /* eslint-disable camelcase */
 import axios from 'axios';
 import { EnvironmentConfigurationError } from '../../errors';
-import { ActiveDirectoryUser, ManagerLookupFields, GetManagerResponse } from '../../types';
+import {
+  ActiveDirectoryUser,
+  ManagerLookupFields,
+  GetManagerResponse,
+  UsersListFieldColumnValueSet,
+  SharepointUsersListFields,
+} from '../../types';
 
-//  !!! This fields will change !!!
-// TODO: the field properties for the returned list will need updated
-export interface ManagerListFields {
-  fields: {
-    field_6: string;
-    field_16: string;
-    Assigned_x0020_ManagerLookupId?: string;
-  };
-}
-
-interface GetSharepointManagerListResponse {
-  value: Array<ManagerListFields>;
+interface GetSharepointUsersListResponse {
+  value: Array<SharepointUsersListFields>;
   'odata.nextLink'?: string;
 }
 
@@ -86,7 +82,7 @@ export class MicrosoftGraphClient {
     return response.data as GetUsersResponse;
   };
 
-  getSharepointList = async (siteId: string, listId: string): Promise<GetSharepointManagerListResponse | undefined> => {
+  getSharepointList = async (siteId: string, listId: string): Promise<GetSharepointUsersListResponse | undefined> => {
     const response = await axios.get(
       `${this.baseUrl}/v1.0/sites/${siteId}/lists/${listId}/items/?expand=fields,columns&top=10000`,
       {
@@ -96,7 +92,7 @@ export class MicrosoftGraphClient {
       },
     );
 
-    return response.data as GetSharepointManagerListResponse;
+    return response.data as GetSharepointUsersListResponse;
   };
 
   getUserByLookupId = async (
@@ -142,6 +138,19 @@ export class MicrosoftGraphClient {
 
   updateUser = async (idOrUserPrincipalName: string, userDetails: ActiveDirectoryUser): Promise<void> => {
     await axios.patch(`${this.baseUrl}/v1.0/users/${idOrUserPrincipalName}`, userDetails, {
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+      },
+    });
+  };
+
+  updateListItem = async (
+    siteId: string,
+    listId: string,
+    itemId: string,
+    fieldValueSet: UsersListFieldColumnValueSet,
+  ): Promise<void> => {
+    await axios.patch(`${this.baseUrl}/v1.0/sites/${siteId}/lists/${listId}/items/${itemId}/fields`, fieldValueSet, {
       headers: {
         Authorization: `Bearer ${this.token}`,
       },
