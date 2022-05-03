@@ -1,12 +1,12 @@
 import { MicrosoftGraphClient } from '../clients/microsoft-graph';
 import { mapJostleUserToSharepointUser } from '../helpers/jostleUserToSharepointUser';
-import { JostleUser, ListFieldColumnValueSet, UsersManagerListResponse } from '../types';
+import { JostleUser, UsersListFieldColumnValueSet, SharepointUsersListResponse } from '../types';
 import { EnvironmentConfigurationError } from '../errors';
 
 export const updateSharepointUserFactory = (microsoftGraphApiClient: MicrosoftGraphClient) => ({
   updateSharepointUserList: async (
     jostleUsers: Array<JostleUser>,
-    sharepointUsersList: Array<UsersManagerListResponse>,
+    sharepointUsersList: Array<SharepointUsersListResponse>,
   ) => {
     if (!process.env.MS_GRAPH_API_SITE_ID) {
       throw new EnvironmentConfigurationError('Missing MS_GRAPH_API_SITE_ID env variable');
@@ -29,7 +29,7 @@ export const updateSharepointUserFactory = (microsoftGraphApiClient: MicrosoftGr
       );
 
       if (sharepointUser) {
-        const fieldValues: ListFieldColumnValueSet = {
+        const fieldValues: UsersListFieldColumnValueSet = {
           LicensedStates: jostleUser.licensedStates || '',
           FulltimeParttime: jostleUser.fulltimeParttime || '',
           NMLS: jostleUser.NMLS || '',

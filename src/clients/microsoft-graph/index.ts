@@ -1,20 +1,13 @@
 /* eslint-disable camelcase */
 import axios from 'axios';
 import { EnvironmentConfigurationError } from '../../errors';
-import { ActiveDirectoryUser, ManagerLookupFields, GetManagerResponse, ListFieldColumnValueSet } from '../../types';
-
-//  !!! This fields will change !!!
-// TODO: the field properties for the returned list will need updated
-export interface SharepointUsersListFields {
-  fields: {
-    id: string; // List ID
-    field_6: string; // Display Name
-    field_16: string; // User ID
-    field_31: string; // User Principal Name
-    field_4: string; // Department
-    Assigned_x0020_ManagerLookupId?: string; // Manager Lookup ID
-  };
-}
+import {
+  ActiveDirectoryUser,
+  ManagerLookupFields,
+  GetManagerResponse,
+  UsersListFieldColumnValueSet,
+  SharepointUsersListFields,
+} from '../../types';
 
 interface GetSharepointUsersListResponse {
   value: Array<SharepointUsersListFields>;
@@ -155,7 +148,7 @@ export class MicrosoftGraphClient {
     siteId: string,
     listId: string,
     itemId: string,
-    fieldValueSet: ListFieldColumnValueSet,
+    fieldValueSet: UsersListFieldColumnValueSet,
   ): Promise<void> => {
     await axios.patch(`${this.baseUrl}/v1.0/sites/${siteId}/lists/${listId}/items/${itemId}/fields`, fieldValueSet, {
       headers: {

@@ -7,7 +7,10 @@ export const email = (jostleUser: JostleUser): string =>
     : jostleUser.WorkEmail;
 
 export const department = (jostleUser: JostleUser) =>
-  jostleUser.CustomFilterCategory.replace(/(Full-time|Part-time|\?\?\s[A-Z]{2})/g, '').replace(/\|/g, '');
+  jostleUser.CustomFilterCategory.replace(/(Full-time|Part-time|\?\?\s[A-Z]{2})/g, '')
+    .replace(/\|/g, ',')
+    .replace(/^,+/, '')
+    .replace(/(.+?),+$/, '$1');
 
 export const licensedStates = (jostleUser: JostleUser) =>
   jostleUser.CustomFilterCategory.replace(/.*?([A-Z]{2}).*?/g, '$1,').replace(/(.*),|.*/g, '$1');

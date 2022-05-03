@@ -1,10 +1,10 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { proxyActivities } from '@temporalio/workflow';
 import * as activities from '../activities';
-import { UsersManagerListResponse } from '../types';
+import { SharepointUsersListResponse } from '../types';
 import { syncActiveDirectoryUserFactory } from '../activities/syncActiveDirectoryUser';
-import { updateSharepointUserFactory } from '../activities/updateSharepointUser';
-import { getSharepointManagersListFactory } from '../activities/getSharepointManagersList';
+import { updateSharepointUserFactory } from '../activities/updateSharepointUsersList';
+import { getSharepointUsersListFactory } from '../activities/getSharepointUsersList';
 import { getManagerByLookupIdFactory } from '../activities/getManagerByLookupId';
 import { getManagerIdFactory } from '../activities/getManagerId';
 import { updateUsersManagerFactory } from '../activities/updateUsersManager';
@@ -13,7 +13,7 @@ const { getJostleUsers } = proxyActivities<typeof activities>({
   startToCloseTimeout: '1 minute',
 });
 
-const { getSharepointManagersList } = proxyActivities<ReturnType<typeof getSharepointManagersListFactory>>({
+const { getSharepointUsersList } = proxyActivities<ReturnType<typeof getSharepointUsersListFactory>>({
   startToCloseTimeout: '10 minutes',
   retry: {
     initialInterval: '10s',
@@ -88,8 +88,8 @@ interface SyncJostleUsersResult {
 
 interface UpdateUserManagerResults {
   assignedManager: boolean;
-  updateUsersManagerFor: string;
-  userId: string;
+  updateUsersManagerFor?: string;
+  userId?: string;
   usersManager?: string;
   usersManagerId?: string;
 }
@@ -97,7 +97,7 @@ interface UpdateUserManagerResults {
 const noManagerAssigned: object[] = [];
 const managerAssigned: object[] = [];
 
-const updateAdUsersManager = async (sharepointUsersList: Array<UsersManagerListResponse>) => {
+const updateAdUsersManager = async (sharepointUsersList: Array<SharepointUsersListResponse>) => {
   // Loop thru user's manager list
   for (let i = 0; sharepointUsersList.length > i; i += 1) {
     if (!sharepointUsersList[i].managerLookupId) {
@@ -141,7 +141,7 @@ const updateAdUsersManager = async (sharepointUsersList: Array<UsersManagerListR
 export async function syncJostleUsersWorkflow(): Promise<void> {
   const jostleUsers = await getJostleUsers();
 
-  const sharepointUsersList = await getSharepointManagersList();
+  const sharepointUsersList = await getSharepointUsersList();
   if (!sharepointUsersList) throw new Error('Manager list is empty!');
 
   console.log('UPDATING SHAREPOINT USERS LIST');

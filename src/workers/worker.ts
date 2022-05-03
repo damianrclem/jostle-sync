@@ -4,11 +4,11 @@ import { Worker, Core } from '@temporalio/worker';
 import 'dotenv/config';
 import * as activities from '../activities';
 import { syncActiveDirectoryUserFactory } from '../activities/syncActiveDirectoryUser';
-import { getSharepointManagersListFactory } from '../activities/getSharepointManagersList';
+import { getSharepointUsersListFactory } from '../activities/getSharepointUsersList';
 import { getManagerByLookupIdFactory } from '../activities/getManagerByLookupId';
 import { getManagerIdFactory } from '../activities/getManagerId';
 import { updateUsersManagerFactory } from '../activities/updateUsersManager';
-import { updateSharepointUserFactory } from '../activities/updateSharepointUser';
+import { updateSharepointUserFactory } from '../activities/updateSharepointUsersList';
 
 import { createMicrosoftGraphApiClient } from '../clients/microsoft-graph';
 
@@ -32,7 +32,7 @@ async function run() {
     activities: {
       ...activities,
       ...syncActiveDirectoryUserFactory(microsoftGraphApiClient),
-      ...getSharepointManagersListFactory(microsoftGraphApiClient),
+      ...getSharepointUsersListFactory(microsoftGraphApiClient),
       ...getManagerByLookupIdFactory(microsoftGraphApiClient),
       ...getManagerIdFactory(microsoftGraphApiClient),
       ...updateUsersManagerFactory(microsoftGraphApiClient),

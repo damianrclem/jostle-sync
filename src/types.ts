@@ -88,21 +88,41 @@ export interface GetManagerResponse {
   id: string;
 }
 
-export interface UsersManagerListResponse {
+export interface SharepointUsersListResponse {
   id: string;
-  displayName: string;
   userId: string;
   managerLookupId: string;
-  userPrincipalName: string;
+  displayName?: string;
+  userPrincipalName?: string;
+  homeAddress?: string;
+  homeCity?: string;
+  homeState?: string;
+  homePostalCode?: string;
+  mobilePhone?: string;
 }
 
-export interface ListFieldColumnValueSet {
+export interface UsersListFieldColumnValueSet {
   FulltimeParttime?: string;
   LicensedStates?: string;
-  field_4?: string;
   NMLS?: string;
+  id?: string; // List ID
+  field_6?: string; // Display Name
+  field_16?: string; // User ID
+  field_31?: string; // User Principal Name
+  field_4?: string; // Department
+  Assigned_x0020_ManagerLookupId?: string; // Manager Lookup ID
+  field_27?: string; // Home address
+  field_2?: string; // Home city
+  field_26?: string; // Home state
+  field_20?: string; // Home postal code
 }
 
 export interface UpdatedSharepointUsersResponse {
   user: string;
+}
+
+//  !!! This fields will change !!!
+// TODO: the field properties for the returned list will need updated
+export interface SharepointUsersListFields {
+  fields: UsersListFieldColumnValueSet;
 }
