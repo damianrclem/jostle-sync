@@ -86,6 +86,7 @@ export interface SharepointUserListColumns {
   workMobile: string;
   birthDate: string;
   personalEmail: string;
+  fax: string;
 }
 
 export interface ManagerLookupFields {
@@ -133,6 +134,7 @@ export interface UsersListFieldColumnValueSet {
   WorkMobile?: string;
   Birthdate?: string;
   PersonalEmail?: string;
+  Fax?: string;
 }
 
 export interface UpdatedSharepointUsersResponse {

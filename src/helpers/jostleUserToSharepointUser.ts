@@ -11,6 +11,7 @@ export const mapJostleUserToSharepointUser = (jostleUser: JostleUser): Sharepoin
 
   const bpdTrackingNumber = getColumnValue(jostleUser, 'BPD Tracking #');
   const website = getColumnValue(jostleUser, 'Website');
+  const fax = getColumnValue(jostleUser, 'Fax');
 
   const sharepointUser: SharepointUserListColumns = {
     displayName: `${jostleUser.FirstName} ${jostleUser.LastName}`,
@@ -29,6 +30,7 @@ export const mapJostleUserToSharepointUser = (jostleUser: JostleUser): Sharepoin
     workMobile: jostleUser.WorkMobilePhone,
     birthDate: jostleUser.BirthDate,
     personalEmail: jostleUser.PersonalEmail,
+    fax,
   };
 
   return sharepointUser;
