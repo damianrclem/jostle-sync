@@ -24,8 +24,6 @@ export const updateSharepointUserFactory = (microsoftGraphApiClient: MicrosoftGr
     for (let i = 0; i < jostleUsers.length; i += 1) {
       const jostleUser = mapJostleUserToSharepointUser(jostleUsers[i]);
 
-      // console.log(jostleUser);
-
       const sharepointUser = sharepointUsersList.find(
         (spUser) => spUser.userPrincipalName === jostleUser.userPrincipalName,
       );
