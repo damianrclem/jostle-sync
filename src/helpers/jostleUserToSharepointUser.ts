@@ -1,5 +1,5 @@
 import { JostleUser, SharepointUserListColumns } from '../types';
-import { getEmail, parseDepartment, parseFulltimeParttime, parseLicensedStates } from './utilities';
+import { getEmail, parseDepartment, parseFulltimeParttime, parseLicensedStates, getColumnValue } from './utilities';
 
 export const mapJostleUserToSharepointUser = (jostleUser: JostleUser): SharepointUserListColumns => {
   // If we are operating against the dev tenant, change the email domain to the dev domain.
@@ -8,6 +8,9 @@ export const mapJostleUserToSharepointUser = (jostleUser: JostleUser): Sharepoin
   const userFulltimeParttime = parseFulltimeParttime(jostleUser);
   const userLicensedStates = parseLicensedStates(jostleUser);
   const usersDepartment = parseDepartment(jostleUser);
+
+  const bpdTrackingNumber = getColumnValue(jostleUser, 'BPD Tracking #');
+  const website = getColumnValue(jostleUser, 'Website');
 
   const sharepointUser: SharepointUserListColumns = {
     displayName: `${jostleUser.FirstName} ${jostleUser.LastName}`,
@@ -21,6 +24,11 @@ export const mapJostleUserToSharepointUser = (jostleUser: JostleUser): Sharepoin
     homeState: jostleUser.MailingAddress1State,
     homePostalCode: jostleUser.MailingAddress1Zip,
     mobilePhone: jostleUser.PersonalMobilePhone,
+    website,
+    bpdTrackingNumber,
+    workMobile: jostleUser.WorkMobilePhone,
+    birthDate: jostleUser.BirthDate,
+    personalEmail: jostleUser.PersonalEmail,
   };
 
   return sharepointUser;

@@ -17,3 +17,17 @@ export const parseLicensedStates = (jostleUser: JostleUser) =>
 
 export const parseFulltimeParttime = (jostleUser: JostleUser) =>
   jostleUser.CustomFilterCategory.replace(/^(.*(Full-time|Part-time).*)$/g, '$2');
+
+/**
+ * Get column values from Jostle data
+ * @param jostleUser
+ * @param columnValueMatch
+ * @returns
+ */
+export const getColumnValue = (jostleUser: JostleUser, columnValueMatch: string): string => {
+  let valueMatched;
+  valueMatched = jostleUser.MessagingAddress1Label === columnValueMatch ? jostleUser.MessagingAddress1 : '';
+  if (!valueMatched)
+    valueMatched = jostleUser.MessagingAddress2Label === columnValueMatch ? jostleUser.MessagingAddress2 : '';
+  return valueMatched;
+};

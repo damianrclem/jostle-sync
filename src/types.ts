@@ -81,6 +81,11 @@ export interface SharepointUserListColumns {
   homeState: string;
   homePostalCode: string;
   mobilePhone: string;
+  website: string;
+  bpdTrackingNumber: string;
+  workMobile: string;
+  birthDate: string;
+  personalEmail: string;
 }
 
 export interface ManagerLookupFields {
@@ -123,6 +128,11 @@ export interface UsersListFieldColumnValueSet {
   FulltimeParttime?: string;
   LicensedStates?: string;
   NMLS?: string;
+  Website?: string;
+  BPDTrackingNumber?: string;
+  WorkMobile?: string;
+  Birthdate?: string;
+  PersonalEmail?: string;
 }
 
 export interface UpdatedSharepointUsersResponse {
