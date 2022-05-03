@@ -1,11 +1,11 @@
 import { ActiveDirectoryUser, JostleUser } from '../types';
-import { email, department } from './utilities';
+import { getEmail, parseDepartment } from './utilities';
 
 export const mapJostleUserToActiveDirectoryUser = (jostleUser: JostleUser): ActiveDirectoryUser => {
   // If we are operating against the dev tenant, change the email domain to the dev domain.
-  const userEmail = email(jostleUser);
+  const userEmail = getEmail(jostleUser);
 
-  const usersDepartment = department(jostleUser);
+  const usersDepartment = parseDepartment(jostleUser);
 
   const activeDirectoryUser: ActiveDirectoryUser = {
     userPrincipalName: userEmail,
