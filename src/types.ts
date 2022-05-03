@@ -101,7 +101,7 @@ export interface SharepointUsersListResponse {
   mobilePhone?: string;
 }
 
-//  !!! This fields will change !!!
+//  !!! These fields will change !!!
 // TODO: the field properties for the returned list will need updated
 export interface UsersListFieldColumnValueSet {
   id?: string; // List ID

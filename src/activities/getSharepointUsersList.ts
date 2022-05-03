@@ -21,7 +21,7 @@ export const getSharepointUsersListFactory = (microsoftGraphApiClient: Microsoft
       return undefined;
     }
 
-    //  !!! This fields will change !!!
+    //  !!! These fields will change !!!
     // TODO: the field properties for the returned list will need updated
     return response?.value.map((user) => ({
       id: user.fields.id!,
