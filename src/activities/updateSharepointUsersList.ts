@@ -28,6 +28,8 @@ export const updateSharepointUserFactory = (microsoftGraphApiClient: MicrosoftGr
         (spUser) => spUser.userPrincipalName === jostleUser.userPrincipalName,
       );
 
+      //  !!! This fields will change !!!
+      // TODO: the field properties for the returned list will need updated
       if (sharepointUser) {
         const fieldValues: UsersListFieldColumnValueSet = {
           LicensedStates: jostleUser.licensedStates || '',

@@ -101,10 +101,9 @@ export interface SharepointUsersListResponse {
   mobilePhone?: string;
 }
 
+//  !!! This fields will change !!!
+// TODO: the field properties for the returned list will need updated
 export interface UsersListFieldColumnValueSet {
-  FulltimeParttime?: string;
-  LicensedStates?: string;
-  NMLS?: string;
   id?: string; // List ID
   field_6?: string; // Display Name
   field_16?: string; // User ID
@@ -115,14 +114,16 @@ export interface UsersListFieldColumnValueSet {
   field_2?: string; // Home city
   field_26?: string; // Home state
   field_20?: string; // Home postal code
+  field_14?: string; // Mobile phone
+  FulltimeParttime?: string;
+  LicensedStates?: string;
+  NMLS?: string;
 }
 
 export interface UpdatedSharepointUsersResponse {
   user: string;
 }
 
-//  !!! This fields will change !!!
-// TODO: the field properties for the returned list will need updated
 export interface SharepointUsersListFields {
   fields: UsersListFieldColumnValueSet;
 }
