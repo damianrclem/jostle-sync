@@ -3,7 +3,7 @@ import axios from 'axios';
 import { EnvironmentConfigurationError } from '../../errors';
 import {
   ActiveDirectoryUser,
-  ManagerLookupFields,
+  UserLookupFields,
   GetManagerResponse,
   UsersListFieldColumnValueSet,
   SharepointUsersListFields,
@@ -19,8 +19,8 @@ interface GetUsersResponse {
   'odata.nextLink'?: string;
 }
 
-interface GetManagerLookupResponse {
-  fields: ManagerLookupFields;
+interface GetUserLookupResponse {
+  fields: UserLookupFields;
   'odata.nextLink'?: string;
 }
 
@@ -99,7 +99,7 @@ export class MicrosoftGraphClient {
     userLookupId: string,
     siteId: string,
     userInfoListId: string,
-  ): Promise<GetManagerLookupResponse | undefined> => {
+  ): Promise<GetUserLookupResponse | undefined> => {
     const response = await axios.get(
       `${this.baseUrl}/v1.0/sites/${siteId}/lists/${userInfoListId}/items/${userLookupId}`,
       {
@@ -109,7 +109,7 @@ export class MicrosoftGraphClient {
       },
     );
 
-    return response.data as GetManagerLookupResponse;
+    return response.data as GetUserLookupResponse;
   };
 
   getUser = async (principalName: string): Promise<GetManagerResponse | undefined> => {

@@ -89,7 +89,7 @@ export interface SharepointUserListColumns {
   fax: string;
 }
 
-export interface ManagerLookupFields {
+export interface UserLookupFields {
   ImnName: string;
   UserName: string;
 }
