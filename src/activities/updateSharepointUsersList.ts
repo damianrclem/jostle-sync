@@ -41,6 +41,12 @@ export const updateSharepointUserFactory = (microsoftGraphApiClient: MicrosoftGr
           field_26: jostleUser.homeState,
           field_20: jostleUser.homePostalCode,
           field_14: jostleUser.mobilePhone,
+          BPDTrackingNumber: jostleUser.bpdTrackingNumber,
+          Website: jostleUser.website,
+          WorkMobile: jostleUser.workMobile,
+          PersonalEmail: jostleUser.personalEmail,
+          Birthdate: jostleUser.birthDate,
+          Fax: jostleUser.fax,
         };
         await microsoftGraphApiClient.updateListItem(siteId, listId, sharepointUser.id, fieldValues);
 
